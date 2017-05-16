@@ -1,0 +1,35 @@
+body{
+  overflow: hidden;
+}
+
+#app{
+  height: 100vh;
+}
+
+.page{
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.toolbar{
+  flex: 0 1 auto;
+}
+
+.stage{
+  flex: 1 1 auto;
+  display: flex;
+  flex-flow: column;
+  overflow: hidden;
+}
+
+.svg{
+  height: 100%;
+  background: #222;
+  margin:10px;
+  flex: 1;
+}
+
+.statusbar{
+  flex: 0 1 auto;
+}
