@@ -104,12 +104,12 @@ function mount(Raphael){
         paper.setViewBox(nvbx, nvby, nvbw, nvbh);
       }
       e.preventDefault();
-    },100));
+    }));
   }
   Raphael.fn.resizable = function(){
     var paper = this;
     $(window).resize(_.throttle(function(){
-      var stage = $('#stage');
+      var stage = $(paper.canvas).parent().parent();
       var vb = paper.getViewBox();
       var scale = paper.getScale();
       paper.setSize(stage.width(), stage.height());

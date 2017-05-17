@@ -2,6 +2,8 @@ var gulp = require('gulp');
 var browserSync = require('browser-sync').create();
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
+var sass = require('gulp-sass');
+var sourcemaps = require('gulp-sourcemaps');
 var _ = require('lodash');
 
 var path = {
@@ -13,6 +15,9 @@ var path = {
     ],
     fonts : [
       'node_modules/bootstrap/dist/fonts/*'
+    ],
+    js : [
+      //'node_modules/flexibility/flexibility.js'
     ]
   }
 };
@@ -33,7 +38,7 @@ gulp.task('auto-reload', ['build'], function(done){
   done();
 });
 
-gulp.task('build', ['browserify', 'move-web-dependencies'], function(){
+gulp.task('build', ['browserify', 'sass', 'move-web-dependencies'], function(){
   gulp.src(path.src + '**/*.html')
     .pipe(gulp.dest(path.wwwroot));
   gulp.src(path.src + 'css/*.css')
@@ -53,4 +58,14 @@ gulp.task('move-web-dependencies', function(){
     .pipe(gulp.dest(path.wwwroot+'/css'));
   gulp.src(path.web_deps.fonts)
     .pipe(gulp.dest(path.wwwroot+'/fonts'));
+  gulp.src(path.web_deps.js)
+    .pipe(gulp.dest(path.wwwroot+'/js'));
+});
+
+gulp.task('sass', function () {
+ return gulp.src(path.src+'css/**/*.scss')
+  .pipe(sourcemaps.init())
+  .pipe(sass().on('error', sass.logError))
+  .pipe(sourcemaps.write())
+  .pipe(gulp.dest(path.wwwroot+'/css'));
 });

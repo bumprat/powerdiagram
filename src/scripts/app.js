@@ -2,7 +2,7 @@ import React from 'react';
 import Toolbar from './components/toolbar';
 import StatusBar from './components/status-bar';
 import _ from 'lodash';
-import raphaelInit from"./raphael-customize"
+import raphaelInit from "./raphael-customize";
 
 class App extends React.Component{
   constructor(props){
@@ -31,7 +31,7 @@ class App extends React.Component{
         <div className="row toolbar">
           <Toolbar currentTool={this.state.currentTool} onCommand={this.execute}/>
         </div>
-        <div className="row stage">
+        <div className="row middle">
           <div className="svg rounded" id="stage">
           </div>
         </div>
