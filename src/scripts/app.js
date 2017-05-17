@@ -27,15 +27,16 @@ class App extends React.Component{
 
   render(){
     return (
-      <div className="container-fluid page">
-        <div className="row toolbar">
+      <div className="page">
+        <div className="toolbar">
           <Toolbar currentTool={this.state.currentTool} onCommand={this.execute}/>
         </div>
-        <div className="row middle">
-          <div className="svg rounded" id="stage">
+        <div className="middle">
+          <div id="stage">
           </div>
+          <div id="sizeTracker"></div>
         </div>
-        <div className="row status-bar">
+        <div className="statusBar">
           <StatusBar currentTool={this.state.currentTool}/>
         </div>
       </div>

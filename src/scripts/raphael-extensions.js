@@ -106,16 +106,38 @@ function mount(Raphael){
       e.preventDefault();
     }));
   }
-  Raphael.fn.resizable = function(){
+  Raphael.fn.resizable = function(mimicElement){
     var paper = this;
     $(window).resize(_.throttle(function(){
-      var stage = $(paper.canvas).parent().parent();
+      autoResize();
+    },100));
+    function autoResize(){
       var vb = paper.getViewBox();
       var scale = paper.getScale();
-      paper.setSize(stage.width(), stage.height());
-      paper.setViewBox(vb.x, vb.y, stage.width()/scale, stage.height()/scale);
-    },100));
+      window.mimicElement = mimicElement;
+      var mw = mimicElement.getBoundingClientRect().width;
+      var mh = mimicElement.getBoundingClientRect().height;
+      paper.setSize(mw, mh);
+      paper.setViewBox(vb.x, vb.y, mw/scale, mh/scale);
+    }
+    return autoResize;
   }
+  Raphael.fn.viewAll = function(){
+    var defaultPadding = 10;
+    var paper = this;
+    var bound = paper.getBound();
+    var vbw = bound.w + 2*defaultPadding;
+    var vbh = bound.h + 2*defaultPadding;
+    var ratio = paper.width/paper.height;
+    if(vbw/vbh > ratio){
+      vbh = vbw / ratio;
+    }else{
+      vbw = vbh * ratio;
+    }
+    paper.setViewBox(bound.x-defaultPadding,
+      bound.y-defaultPadding, vbw, vbh);
+  }
+
 }
 
 export default mount

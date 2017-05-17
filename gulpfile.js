@@ -11,10 +11,10 @@ var path = {
   src : './src/',
   web_deps : {
     css : [
-      'node_modules/bootstrap/dist/css/*'
+      //'node_modules/bootstrap/dist/css/*'
     ],
     fonts : [
-      'node_modules/bootstrap/dist/fonts/*'
+      //'node_modules/bootstrap/dist/fonts/*'
     ],
     js : [
       //'node_modules/flexibility/flexibility.js'
