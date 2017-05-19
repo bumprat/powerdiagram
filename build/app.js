@@ -48454,6 +48454,10 @@ var _raphaelCustomize = require('./raphael-customize');
 
 var _raphaelCustomize2 = _interopRequireDefault(_raphaelCustomize);
 
+var _propertyPanel = require('./components/property-panel');
+
+var _propertyPanel2 = _interopRequireDefault(_propertyPanel);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -48473,7 +48477,8 @@ var App = function (_React$Component) {
     _this.state = {
       currentTool: {
         "绘制": "选择"
-      }
+      },
+      showPanel: false
     };
     _this.execute = _this.execute.bind(_this);
     return _this;
@@ -48488,6 +48493,13 @@ var App = function (_React$Component) {
         this.setState({
           currentTool: ct
         });
+        return false;
+      } else if (cmd.type === 'hide-panel') {
+        this.setState({ showPanel: false });
+      } else if (cmd.type === 'show-panel') {
+        this.setState({ showPanel: true });
+      } else if (cmd.type === 'toggle-panel') {
+        this.setState({ showPanel: !this.state.showPanel });
       }
     }
   }, {
@@ -48509,9 +48521,10 @@ var App = function (_React$Component) {
         ),
         _react2.default.createElement(
           'div',
-          { className: 'statusBar' },
+          { className: 'statusbar' },
           _react2.default.createElement(_statusBar2.default, { currentTool: this.state.currentTool })
-        )
+        ),
+        _react2.default.createElement(_propertyPanel2.default, { onCommand: this.execute, show: this.state.showPanel })
       );
     }
   }, {
@@ -48526,7 +48539,116 @@ var App = function (_React$Component) {
 
 exports.default = App;
 
-},{"./components/status-bar":190,"./components/toolbar":192,"./raphael-customize":194,"lodash":26,"react":188}],190:[function(require,module,exports){
+},{"./components/property-panel":190,"./components/status-bar":191,"./components/toolbar":193,"./raphael-customize":196,"lodash":26,"react":188}],190:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PropertyPanel = function (_React$Component) {
+  _inherits(PropertyPanel, _React$Component);
+
+  function PropertyPanel(props) {
+    _classCallCheck(this, PropertyPanel);
+
+    var _this = _possibleConstructorReturn(this, (PropertyPanel.__proto__ || Object.getPrototypeOf(PropertyPanel)).call(this, props));
+
+    _this.hidePanel = _this.hidePanel.bind(_this);
+    _this.showPanel = _this.showPanel.bind(_this);
+    _this.togglePanel = _this.togglePanel.bind(_this);
+    window.showPanel = _this.showPanel.bind(_this);
+    window.hidePanel = _this.hidePanel.bind(_this);
+    window.togglePanel = _this.togglePanel.bind(_this);
+    _this.state = {
+      show: false
+    };
+    return _this;
+  }
+
+  _createClass(PropertyPanel, [{
+    key: 'hidePanel',
+    value: function hidePanel() {
+      //$('#propertyPanel').stop().animate({right: '-340px'}, 200, 'swing');
+      this.props.onCommand({ type: 'hide-panel' });
+    }
+  }, {
+    key: 'showPanel',
+    value: function showPanel() {
+      //$('#propertyPanel').stop().animate({right: '0px'}, 200, 'swing');
+      this.props.onCommand({ type: 'show-panel' });
+    }
+  }, {
+    key: 'togglePanel',
+    value: function togglePanel() {
+      this.props.onCommand({ type: 'toggle-panel' });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { id: 'propertyPanel', className: this.props.show ? 'show' : 'hide' },
+        _react2.default.createElement(
+          'div',
+          { className: 'close' },
+          _react2.default.createElement(
+            'a',
+            { href: '#', onClick: this.togglePanel },
+            this.props.show ? 'x' : '属性窗口'
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'top' },
+          _react2.default.createElement(
+            'div',
+            { className: 'title' },
+            '123'
+          )
+        ),
+        _react2.default.createElement('div', { className: 'middle' }),
+        _react2.default.createElement(
+          'div',
+          { className: 'bottom' },
+          '\u5C5E\u6027\u9875'
+        )
+      );
+    }
+  }]);
+
+  return PropertyPanel;
+}(_react2.default.Component);
+
+PropertyPanel.protapTypes = {
+  data: _propTypes2.default.object
+};
+
+exports.default = PropertyPanel;
+
+},{"lodash":26,"prop-types":32,"react":188}],191:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48561,7 +48683,7 @@ var StatusBar = function (_React$Component) {
     value: function render() {
       return _react2.default.createElement(
         'div',
-        { className: 'col-xs-12' },
+        { className: 'statusbar-container' },
         _react2.default.createElement(
           'p',
           null,
@@ -48579,7 +48701,7 @@ var StatusBar = function (_React$Component) {
 
 exports.default = StatusBar;
 
-},{"react":188}],191:[function(require,module,exports){
+},{"react":188}],192:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48636,10 +48758,8 @@ var ToolbarRadioButton = function (_React$Component) {
     value: function render() {
       return _react2.default.createElement(
         'a',
-        { href: '#', className: 'btn ' + (_lodash2.default.get(this.props.currentTool, this.props.group) === this.props.content ? 'btn-primary' : 'btn-default'),
-          onClick: this.handleClick,
-          'aria-label': this.props.content },
-        _react2.default.createElement('span', { className: 'glyphicon ' + this.props.glyphicon, 'aria-hidden': 'true' }),
+        { href: '#', className: 'toolbar-radio-button ' + (_lodash2.default.get(this.props.currentTool, this.props.group) === this.props.content ? 'active' : ''),
+          onClick: this.handleClick },
         _react2.default.createElement(
           'span',
           { className: 'hidden-xs' },
@@ -48660,7 +48780,6 @@ ToolbarRadioButton.defaultProps = {
 };
 
 ToolbarRadioButton.propTypes = {
-  glyphicon: _propTypes2.default.string,
   content: _propTypes2.default.string,
   currentTool: _propTypes2.default.object,
   handleClick: _propTypes2.default.func
@@ -48668,7 +48787,7 @@ ToolbarRadioButton.propTypes = {
 
 exports.default = ToolbarRadioButton;
 
-},{"lodash":26,"prop-types":32,"react":188}],192:[function(require,module,exports){
+},{"lodash":26,"prop-types":32,"react":188}],193:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48711,19 +48830,19 @@ var Toolbar = function (_React$Component) {
     value: function render() {
       return _react2.default.createElement(
         'div',
-        { className: 'col-xs-12 ' },
+        { className: 'toolbar-container' },
         _react2.default.createElement(
           'div',
-          { className: 'btn-toolbar', role: 'toolbar' },
-          _react2.default.createElement(
-            'div',
-            { className: 'btn-group' },
-            _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, glyphicon: 'glyphicon-th', group: '\u7ED8\u5236', content: '\u9009\u62E9' }),
-            _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, glyphicon: 'glyphicon-map-marker', group: '\u7ED8\u5236', content: '\u53D8\u7535\u7AD9' }),
-            _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, glyphicon: 'glyphicon-resize-horizontal', group: '\u7ED8\u5236', content: '\u8F93\u7535\u7EBF' }),
-            _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, glyphicon: 'glyphicon-certificate', group: '\u7ED8\u5236', content: '\u53D1\u7535\u5382' }),
-            _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, glyphicon: 'glyphicon-remove', group: '\u7ED8\u5236', content: '\u6545\u969C' })
-          )
+          { className: 'toolbar-group' },
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u9009\u62E9' }),
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u53D8\u7535\u7AD9' })
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'toolbar-group' },
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u8F93\u7535\u7EBF' }),
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u53D1\u7535\u5382' }),
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u6545\u969C' })
         )
       );
     }
@@ -48739,7 +48858,91 @@ Toolbar.propTypes = {
 
 exports.default = Toolbar;
 
-},{"./toolbar-radio-button":191,"prop-types":32,"react":188}],193:[function(require,module,exports){
+},{"./toolbar-radio-button":192,"prop-types":32,"react":188}],194:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var voltageLevelEnum = "330kV|750kV|110kV|35kV";
+
+var dataDef = {
+  substation: [{
+    propName: "name",
+    propChName: "名称",
+    propType: "string",
+    defaultValue: "厂站{i}"
+  }, {
+    propName: "voltageLevel",
+    propChName: "电压等级",
+    propType: "enum",
+    defaultValue: "330kV",
+    valEnum: voltageLevelEnum
+  }, {
+    propName: "location",
+    propChName: "坐标",
+    propType: "point",
+    defaultValue: { x: 0, y: 0 }
+  }],
+  powerline: [{
+    propName: "name",
+    propChName: "名称",
+    propType: "string",
+    defaultValue: "交流线路{i}"
+  }, {
+    propName: "voltageLevel",
+    propChName: "电压等级",
+    propType: "enum",
+    defaultValue: "330kV",
+    valEnum: voltageLevelEnum
+  }, {
+    propName: "startSub",
+    propChName: "始端厂站",
+    propType: "shape",
+    defaultValue: null
+  }, {
+    propName: "endSub",
+    propChName: "末端厂站",
+    propType: "shape",
+    defaultValue: null
+  }, {
+    propName: "startbind",
+    propChName: "始端共串线路",
+    propType: "shape",
+    defaultValue: null
+  }, {
+    propName: "endbind",
+    propChName: "末端共串线路",
+    propType: "shape",
+    defaultValue: null
+  }, {
+    propName: "path",
+    propChName: "路径字符串",
+    propType: "double",
+    defaultValue: ""
+  }],
+  generation: [{
+    propName: "name",
+    propChName: "名称",
+    propType: "string",
+    defaultValue: "发电厂{i}"
+  }, {
+    propName: "voltageLevel",
+    propChName: "电压等级",
+    propType: "enum",
+    defaultValue: "330kV",
+    valEnum: voltageLevelEnum
+  }, {
+    propName: "location",
+    propChName: "坐标",
+    propType: "point",
+    defaultValue: { x: 0, y: 0 }
+  }]
+};
+
+exports.default = dataDef;
+
+},{}],195:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -48772,7 +48975,7 @@ window._ = _lodash2.default;
 
 _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.getElementById('app'));
 
-},{"./app":189,"jquery":25,"lodash":26,"react":188,"react-dom":35}],194:[function(require,module,exports){
+},{"./app":189,"jquery":25,"lodash":26,"react":188,"react-dom":35}],196:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48799,7 +49002,13 @@ var _raphaelThemeDefault = require("./raphael-theme-default");
 
 var _raphaelThemeDefault2 = _interopRequireDefault(_raphaelThemeDefault);
 
+var _dataDefinitions = require("./data-definitions");
+
+var _dataDefinitions2 = _interopRequireDefault(_dataDefinitions);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+window.Raphael = _raphael2.default;
 
 var stage, paper;
 
@@ -48814,16 +49023,26 @@ function raphaelInit() {
   window.paper = paper;
   paper.panable();
   paper.scalable();
-  paper.resizable((0, _jquery2.default)('#sizeTracker')[0])();
-  paper.pSubstation(350, 170, paper);
-  paper.pSubstation(100, 170, paper);
-  paper.pSubstation(200, 200, paper);
+  paper.resizable((0, _jquery2.default)('.middle')[0])();
+  paper.selectable();
+  var psub = paper.substation({
+    name: "变电站1",
+    voltageLevel: "110kV",
+    location: { x: 100, y: 100 }
+  });
+  var psub = paper.substation({
+    name: "变电站2",
+    voltageLevel: "110kV",
+    location: { x: 200, y: 200 }
+  });
+  psub.update({ voltageLevel: "35kV" });
+  window.psub = psub;
   paper.viewAll();
 }
 
 exports.default = _lodash2.default.once(raphaelInit);
 
-},{"./raphael-extensions":195,"./raphael-theme-default":196,"jquery":25,"lodash":26,"raphael":34}],195:[function(require,module,exports){
+},{"./data-definitions":194,"./raphael-extensions":197,"./raphael-theme-default":198,"jquery":25,"lodash":26,"raphael":34}],197:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48868,7 +49087,7 @@ function mount(Raphael) {
       y: topShapeBBox.y,
       y2: topShapeBBox.y2
     };
-    this.forEach(function (shape) {
+    this.entities.forEach(function (shape) {
       var box = shape.getBBox();
       bound.x = bound.x > box.x ? box.x : bound.x;
       bound.x2 = bound.x2 < box.x2 ? box.x2 : bound.x2;
@@ -48893,24 +49112,21 @@ function mount(Raphael) {
     var dragging = false;
     var paper = this;
     var previouslocation = {};
-    (0, _jquery2.default)(paper.canvas).bind('mousedown', function (e) {
+    (0, _jquery2.default)(paper.canvas).on('mousedown', function (e) {
       if (e.target == paper.canvas) {
         dragging = true;
         previouslocation.x = e.screenX;
         previouslocation.y = e.screenY;
       };
-    }).bind('mouseup', function (e) {
+    }).on('mouseup', function (e) {
       if (dragging) {
         dragging = false;
       };
-    })
-    /*.bind('mouseout', function(e){
-      if(dragging && false){
-        console.log('out')
+    }).on('mouseout', function (e) {
+      if (dragging && !jQuery.contains(paper.canvas, e.toElement) && e.toElement.tagName !== 'path' && e.toElement.tagName !== 'svg') {
         dragging = false;
       };
-    })*/
-    .bind('mousemove', function (e) {
+    }).on('mousemove', function (e) {
       if (dragging) {
         var deltaX = e.screenX - previouslocation.x;
         var deltaY = e.screenY - previouslocation.y;
@@ -48924,7 +49140,7 @@ function mount(Raphael) {
   };
   Raphael.fn.scalable = function () {
     var zoomFactor = 0.1,
-        minScale = 0.1;
+        minScale = 0.5;
     (0, _jqueryMousewheel2.default)(_jquery2.default);
     var paper = this;
     var p = paper.canvas;
@@ -48943,6 +49159,10 @@ function mount(Raphael) {
         var nvbh = vb.h - deltaY;
         paper.setViewBox(nvbx, nvby, nvbw, nvbh);
       }
+      paper.forEach(function (el) {
+        var sw = el.data('stroke-width');
+        el.attr('stroke-width', sw / paper.getScale());
+      });
       e.preventDefault();
     }));
   };
@@ -48975,12 +49195,47 @@ function mount(Raphael) {
       vbw = vbh * ratio;
     }
     paper.setViewBox(bound.x - defaultPadding, bound.y - defaultPadding, vbw, vbh);
+    paper.forEach(function (el) {
+      var sw = el.data('stroke-width');
+      el.attr('stroke-width', sw / paper.getScale());
+    });
+  };
+  Raphael.fn.selectable = function () {
+    var paper = this;
+    paper._selection = [];
+    paper.entities = [];
+    paper._selection.Push = function (el) {
+      paper._selection.push(el);
+      updateBBox();
+    };
+    paper._selection.Pull = function (el) {
+      _lodash2.default.remove(paper._selection, function (item) {
+        return item === el;
+      });
+      updateBBox();
+    };
+    console.log(1);
+    paper._selection.Clear = function () {
+      _lodash2.default.remove(paper._selection, function () {
+        return true;
+      });
+      updateBBox();
+    };
+    function updateBBox() {
+      paper.entities.forEach(function (el) {
+        if (_lodash2.default.indexOf(paper._selection, el) >= 0) {
+          el.BBox(true);
+        } else {
+          el.BBox(false);
+        }
+      });
+    }
   };
 }
 
 exports.default = mount;
 
-},{"jquery":25,"jquery-mousewheel":24,"lodash":26,"raphael":34}],196:[function(require,module,exports){
+},{"jquery":25,"jquery-mousewheel":24,"lodash":26,"raphael":34}],198:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49008,42 +49263,104 @@ function psCircle(x, y, r) {
 }
 
 function mount(Raphael) {
-  Raphael.fn.pSubstation = function (x, y) {
-    var radius1 = 3;
-    var radius2 = 5;
-    var radius3 = 7;
-    var paper = this;
-    var psub = paper.path().attr({
-      path: psCircle(x, y, radius1) + psCircle(x, y, radius2) + psCircle(x, y, radius3)
-    });
-    psub.attr({ 'stroke': 'red', 'fill-opacity': 0.01, 'fill': 'black' });
-    var isMouseover = false;
-    window.glow = {};
-    psub.mouseover(function () {
-      if (!isMouseover) {
-        glow = this.glow({ color: 'white', width: radius1, opacity: 0.3 });
-        isMouseover = true;
-      }
-    }).mouseout(function () {
-      if (isMouseover) {
-        glow.remove();
-        isMouseover = false;
-      }
-    }).drag(onmove, onstart, onend);
-    function onmove(dx, dy, x, y) {
-      var scale = paper.getScale();
-      x = x + dx / scale;
-      y = y + dy / scale;
-      psub.attr({
-        path: psCircle(x, y, radius1) + psCircle(x, y, radius2) + psCircle(x, y, radius3)
-      });
+  /*
+  function shapeMouseoverHandler(){
+    if(_.hasIn(this, 'shapeGlow')){
+      this.shapeGlow.remove();
     }
-    function onstart() {}
-    function onend() {}
+    this.shapeGlow = this.glow({color:'white', width:3, opacity:0.3});
+  }
+  function shapeMouseoutHandler(){
+    if(_.hasIn(this, 'shapeGlow')){
+      this.shapeGlow.remove();
+    }
+  }
+  Raphael.el.mouseoverGlow = function(remove){
+    var el = this;
+    if(remove){
+      if(_.hasIn(el, 'shapeGlow')){
+        el.shapeGlow.remove();
+        el.unmouseover(shapeGlowMouseoverHandler.bind(el)).unmouseout(shapeGlowMouseoutHandler.bind(el));
+      }
+    }else{
+      el.mouseover(shapeGlowMouseoverHandler.bind(el)).mouseout(shapeGlowMouseoutHandler.bind(el));
+    }
+  }*/
+
+  Raphael.el.BBox = function (show) {
+    var el = this;
+    el._box = el._box || el.paper.rect(0, 0, 0, 0).hide().attr({
+      fill: 'none',
+      stroke: "white",
+      'stroke-dasharray': '--',
+      'stroke-linecapstring': 'round',
+      'stroke-width': 1 / el.paper.getScale()
+    });
+    el._box.data('stroke-width', 2);
+    if (show) {
+      eve.on('raphael.attr.path.' + el.id, updateBBox);
+      updateBBox();
+      el._box.show();
+      console.log(1);
+    } else {
+      eve.off('raphael.attr.path.' + el.id, updateBBox);
+      el._box.hide();
+    }
+    function updateBBox() {
+      var BBox = el.getBBox();
+      el._box.attr({ x: BBox.x, y: BBox.y, width: BBox.width, height: BBox.height });
+    }
+  };
+
+  Raphael.el.selectable = function () {
+    var el = this;
+    console.log(2);
+    el.click(function (e) {
+      el.paper._selection.Clear(el);
+      el.paper._selection.Push(el);
+    });
+  };
+
+  Raphael.el.draggable = function () {
+    var el = this;
+    var origin;
+    el.drag(function (dx, dy, x, y) {
+      var scale = paper.getScale();
+      x = origin.x + dx / scale;
+      y = origin.y + dy / scale;
+      el.update({ location: { x: x, y: y } });
+    }, function () {
+      origin = el.data('data').location;
+    }, function () {});
+  };
+
+  Raphael.fn.substation = function (data) {
+    var paper = this;
+    var radius1 = 10,
+        radius2 = 20,
+        radius3 = 30;
+    var psub = paper.path();
+    psub.data('stroke-width', 3);
+    psub.selectable();
+    psub.draggable();
+    psub.update = function (data) {
+      var data = _lodash2.default.defaults(data, psub.data('data'));
+      var color = { '330kV': '#ff5555', '750kV': '#ffff55', '110kV': '#55ffff', '35kV': '#55ff55' };
+      this.attr({
+        'path': psCircle(data.location.x, data.location.y, radius1) + psCircle(data.location.x, data.location.y, radius2) + psCircle(data.location.x, data.location.y, radius3),
+        'stroke': _lodash2.default.get(color, data.voltageLevel, color['35kV']),
+        'fill-opacity': 0.01,
+        'fill': 'black',
+        'stroke-width': psub.data('stroke-width') / paper.getScale()
+      });
+      psub.data('data', data);
+    }.bind(psub);
+    psub.update(data);
+    paper.entities.push(psub);
     return psub;
   };
 }
 
 exports.default = mount;
 
-},{"jquery":25,"lodash":26,"raphael":34}]},{},[193]);
+},{"jquery":25,"lodash":26,"raphael":34}]},{},[195]);

@@ -24,7 +24,7 @@ function mount(Raphael){
       y : topShapeBBox.y,
       y2 : topShapeBBox.y2
     };
-    this.forEach(function(shape){
+    this.entities.forEach(function(shape){
       var box = shape.getBBox();
       bound.x = bound.x > box.x ? box.x : bound.x;
       bound.x2 = bound.x2 < box.x2 ? box.x2 : bound.x2;
@@ -49,25 +49,26 @@ function mount(Raphael){
       var dragging = false;
       var paper = this;
       var previouslocation = {};
-      $(paper.canvas).bind('mousedown', function(e){
+      $(paper.canvas).on('mousedown', function(e){
         if(e.target == paper.canvas){
           dragging = true;
         previouslocation.x = e.screenX;
         previouslocation.y = e.screenY;
         };
       })
-      .bind('mouseup', function(e){
+      .on('mouseup', function(e){
         if(dragging){
           dragging = false;
         };
       })
-      /*.bind('mouseout', function(e){
-        if(dragging && false){
-          console.log('out')
+      .on('mouseout', function(e){
+        if(dragging && !jQuery.contains(paper.canvas,e.toElement)
+          && e.toElement.tagName!=='path'
+          && e.toElement.tagName!=='svg'){
           dragging = false;
         };
-      })*/
-      .bind('mousemove', function(e){
+      })
+      .on('mousemove', function(e){
         if(dragging){
           var deltaX = e.screenX - previouslocation.x;
           var deltaY = e.screenY - previouslocation.y;
@@ -81,7 +82,7 @@ function mount(Raphael){
       });
   }
   Raphael.fn.scalable = function(){
-    var zoomFactor = 0.1, minScale = 0.1;
+    var zoomFactor = 0.1, minScale = 0.5;
     jqueryMousewheel($);
     var paper = this;
     var p = paper.canvas;
@@ -103,6 +104,10 @@ function mount(Raphael){
         var nvbh = vb.h - deltaY;
         paper.setViewBox(nvbx, nvby, nvbw, nvbh);
       }
+      paper.forEach(function(el){
+        var sw = el.data('stroke-width');
+        el.attr('stroke-width', sw/paper.getScale());
+      });
       e.preventDefault();
     }));
   }
@@ -136,8 +141,38 @@ function mount(Raphael){
     }
     paper.setViewBox(bound.x-defaultPadding,
       bound.y-defaultPadding, vbw, vbh);
+    paper.forEach(function(el){
+      var sw = el.data('stroke-width');
+      el.attr('stroke-width', sw/paper.getScale());
+    });
   }
-
+  Raphael.fn.selectable = function(){
+    var paper = this;
+    paper._selection = [];
+    paper.entities = [];
+    paper._selection.Push = function(el){
+      paper._selection.push(el);
+      updateBBox();
+    }
+    paper._selection.Pull = function(el){
+      _.remove(paper._selection, (item)=>item===el);
+      updateBBox();
+    }
+    console.log(1)
+    paper._selection.Clear = function(){
+      _.remove(paper._selection, ()=>true);
+      updateBBox();
+    }
+    function updateBBox(){
+      paper.entities.forEach(function(el){
+        if(_.indexOf(paper._selection, el)>=0){
+          el.BBox(true);
+        }else{
+          el.BBox(false);
+        }
+      });
+    }
+  }
 }
 
 export default mount

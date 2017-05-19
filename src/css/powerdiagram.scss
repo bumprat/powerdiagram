@@ -2,8 +2,31 @@
 
 $font-stack: Helvetica, Tahoma, Arial, STXihei, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
 $background-color: black;
-$foreground-color: blue;
+$foreground-color: #44aaee;
 $text-color: white;
+
+@mixin anchor-button($padding){
+  background: $background-color;
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  vertical-align: center;
+  padding:$padding;
+  color: darken($text-color, 30%);
+  border: 1px solid lighten($background-color, 10%);
+  &:hover{
+    background-color: lighten($foreground-color, 20%);
+    color: $background-color;
+  }
+  &.active{
+    background-color: $foreground-color;
+    color: $background-color;
+  }
+  &:active{
+    background-color: darken($foreground-color, 20%);
+    color: $background-color;
+  }
+}
 
 html{
   height: 100%;
@@ -22,6 +45,16 @@ html{
         .toolbar {
           display: table-row;
           background-color: lighten($background-color, 10%);
+          .toolbar-container {
+            padding: 20px;
+            .toolbar-group {
+              padding-right: 10px;
+              display: inline-block;
+              .toolbar-radio-button {
+                @include anchor-button(10px);
+              }
+            }
+          }
         }
         .middle {
           display: table-row;
@@ -39,9 +72,57 @@ html{
             }
           }
         }
-        .statusBar {
+        .statusbar {
           display: table-row;
           background-color: lighten($background-color, 10%);
+          .statusbar-container{
+            margin: 20px;
+
+          }
+        }
+        #propertyPanel {
+          position: absolute;
+          top:0px;
+          background-color: lighten($background-color, 20%);
+          height: 100%;
+          width: 300px;
+          padding: 20px;
+          display: table;
+          &.hide{
+            right: -340px;
+          }
+          &.show{
+            right: 0px;            
+          }
+          .close{
+            position: absolute;
+            display: inline-block;
+            left: -30px;
+            top: 30%;
+            a{
+              @include anchor-button(0);
+              width: 30px;
+              line-height: 30px;
+              border: none;
+              background-color: lighten($background-color, 20%);
+            }
+          }
+          .top{
+            display: table-row;
+            .title{
+              display: table-cell;
+              width: 100%;
+              text-align: center;
+            }
+            .middle{
+              display: table-row;
+              height: 100%;
+              overflow:scroll;
+            }
+            .bottom{
+              display: table-row;
+            }
+          }
         }
       }
     }

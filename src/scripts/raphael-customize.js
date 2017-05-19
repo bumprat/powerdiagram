@@ -3,6 +3,8 @@ import _ from "lodash"
 import $ from "jquery"
 import ext from "./raphael-extensions"
 import theme from "./raphael-theme-default"
+import dataDef from "./data-definitions"
+window.Raphael = Raphael;
 
 var stage,
     paper;
@@ -19,11 +21,22 @@ function raphaelInit(){
   window.paper = paper;
   paper.panable();
   paper.scalable();
-  paper.resizable($('#sizeTracker')[0])();
-  paper.pSubstation(350, 170, paper);
-  paper.pSubstation(100, 170, paper);
-  paper.pSubstation(200, 200, paper);
+  paper.resizable($('.middle')[0])();
+  paper.selectable();
+  var psub = paper.substation({
+    name: "变电站1",
+    voltageLevel: "110kV",
+    location: {x: 100, y: 100}
+  });
+  var psub = paper.substation({
+    name: "变电站2",
+    voltageLevel: "110kV",
+    location: {x: 200, y: 200}
+  });
+  psub.update({voltageLevel: "35kV"});
+  window.psub=psub;
   paper.viewAll();
 }
+
 
 export default _.once(raphaelInit);

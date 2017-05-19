@@ -43,6 +43,8 @@ gulp.task('build', ['browserify', 'sass', 'move-web-dependencies'], function(){
     .pipe(gulp.dest(path.wwwroot));
   gulp.src(path.src + 'css/*.css')
     .pipe(gulp.dest(path.wwwroot + 'css'));
+  gulp.src(path.src + '/favicon.png')
+    .pipe(gulp.dest(path.wwwroot));
 });
 
 gulp.task('browserify', function(){

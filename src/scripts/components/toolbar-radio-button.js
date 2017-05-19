@@ -20,11 +20,9 @@ class ToolbarRadioButton extends React.Component{
 
   render(){
     return (
-      <a href="#" className={'btn '
-        + ((_.get(this.props.currentTool, this.props.group) === this.props.content)?'btn-primary':'btn-default')}
-        onClick={this.handleClick}
-        aria-label={this.props.content}>
-        <span className={'glyphicon ' + (this.props.glyphicon)} aria-hidden="true"></span>
+      <a href="#" className={'toolbar-radio-button '
+        + ((_.get(this.props.currentTool, this.props.group) === this.props.content)?'active':'')}
+        onClick={this.handleClick}>
         <span className="hidden-xs"> {this.props.content}</span>
       </a>
     );
@@ -38,7 +36,6 @@ ToolbarRadioButton.defaultProps = {
 };
 
 ToolbarRadioButton.propTypes = {
-  glyphicon : PropTypes.string,
   content : PropTypes.string,
   currentTool : PropTypes.object,
   handleClick : PropTypes.func

@@ -3,6 +3,7 @@ import Toolbar from './components/toolbar';
 import StatusBar from './components/status-bar';
 import _ from 'lodash';
 import raphaelInit from "./raphael-customize";
+import PropertyPanel from "./components/property-panel";
 
 class App extends React.Component{
   constructor(props){
@@ -10,7 +11,8 @@ class App extends React.Component{
     this.state = {
       currentTool : {
         "绘制" : "选择"
-      }
+      },
+      showPanel : false
     }
     this.execute = this.execute.bind(this);
   }
@@ -22,6 +24,13 @@ class App extends React.Component{
       this.setState({
         currentTool : ct
       });
+      return false;
+    }else if(cmd.type === 'hide-panel'){
+      this.setState({showPanel : false});
+    }else if(cmd.type === 'show-panel'){
+      this.setState({showPanel : true});
+    }else if(cmd.type === 'toggle-panel'){
+      this.setState({showPanel : !this.state.showPanel});
     }
   }
 
@@ -36,9 +45,10 @@ class App extends React.Component{
           </div>
           <div id="sizeTracker"></div>
         </div>
-        <div className="statusBar">
+        <div className="statusbar">
           <StatusBar currentTool={this.state.currentTool}/>
         </div>
+        <PropertyPanel onCommand={this.execute} show={this.state.showPanel}/>
       </div>
     );
   }
