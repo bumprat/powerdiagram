@@ -1,6 +1,7 @@
 import Raphael from "raphael"
 import _ from "lodash"
 import $ from "jquery"
+import dataDef from './data-definitions'
 
 function psCircle(x, y, r){
   // 近似圆形，详见：stackoverflow how to create circle with bezier curves
@@ -56,7 +57,6 @@ function mount(Raphael){
       eve.on('raphael.attr.path.'+el.id, updateBBox);
       updateBBox();
       el._box.show();
-      console.log(1)
     }else{
       eve.off('raphael.attr.path.'+el.id, updateBBox);
       el._box.hide();
@@ -69,11 +69,9 @@ function mount(Raphael){
 
   Raphael.el.selectable = function(){
     var el = this;
-    console.log(2)
-    el.click(function(e){
-      el.paper._selection.Clear(el);
-      el.paper._selection.Push(el);
-    });
+    el.click(function(){
+      eve('entity.click.'+el.id, el);
+    })
   }
 
   Raphael.el.draggable = function(){
@@ -90,20 +88,28 @@ function mount(Raphael){
     });
   }
 
+
   Raphael.fn.substation = function(data){
     var paper = this;
-    var radius1 = 10, radius2 = 20, radius3 = 30;
+    var radius = 10;
     var psub = paper.path();
+    var defaultValue = _.fromPairs(_.map(dataDef['substation'],(p)=>[p.propName, p.defaultValue]));
+    _.defaults(data, defaultValue);
     psub.data('stroke-width', 3);
-    psub.selectable();
+    psub.data('def', 'substation');
     psub.draggable();
+    psub.selectable();
     psub.update = (function(data){
       var data = _.defaults(data, psub.data('data'));
+      paper.nameResolver(data, psub);
       var color = {'330kV':'#ff5555', '750kV':'#ffff55', '110kV':'#55ffff', '35kV' : '#55ff55'};
+      var rings = {'330kV':3, '750kV':5, '110kV':1, '35kV' : 1};
+      var path = "";
+      for(var i=1; i<=_.get(rings, data.voltageLevel, rings['35kV']); i++){
+        path+=psCircle(data.location.x, data.location.y, radius*i);
+      }
       this.attr({
-        'path' : psCircle(data.location.x, data.location.y, radius1)
-          +psCircle(data.location.x, data.location.y, radius2)
-          +psCircle(data.location.x, data.location.y, radius3),
+        'path' : path,
         'stroke': _.get(color, data.voltageLevel, color['35kV']),
         'fill-opacity':0.01,
         'fill':'black',

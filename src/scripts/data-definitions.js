@@ -6,7 +6,7 @@ var dataDef = {
       propName : "name",
       propChName : "名称",
       propType : "string",
-      defaultValue : "厂站{i}"
+      defaultValue : "厂站"
     },{
       propName : "voltageLevel",
       propChName : "电压等级",
@@ -25,7 +25,7 @@ var dataDef = {
       propName : "name",
       propChName : "名称",
       propType : "string",
-      defaultValue : "交流线路{i}"
+      defaultValue : "交流线路"
     },{
       propName : "voltageLevel",
       propChName : "电压等级",
@@ -55,7 +55,7 @@ var dataDef = {
     },{
       propName : "path",
       propChName : "路径字符串",
-      propType : "double",
+      propType : "text",
       defaultValue : ""
     }
   ],
@@ -64,7 +64,7 @@ var dataDef = {
       propName : "name",
       propChName : "名称",
       propType : "string",
-      defaultValue : "发电厂{i}"
+      defaultValue : "发电厂"
     },{
       propName : "voltageLevel",
       propChName : "电压等级",

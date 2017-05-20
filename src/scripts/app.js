@@ -12,9 +12,16 @@ class App extends React.Component{
       currentTool : {
         "绘制" : "选择"
       },
-      showPanel : false
+      showPanel : false,
+      message : "无信息",
+      propertyPanelData : {
+        def : "none",
+        val : {
+        },
+        target : null
+      }
     }
-    this.execute = this.execute.bind(this);
+    window.execute = this.execute = this.execute.bind(this);
   }
 
   execute(cmd){
@@ -24,14 +31,23 @@ class App extends React.Component{
       this.setState({
         currentTool : ct
       });
-      return false;
+      this.setState({message:"选择工具:【"+cmd.info.group+"】"+cmd.info.toolName});
+      return;
     }else if(cmd.type === 'hide-panel'){
       this.setState({showPanel : false});
+      return;
     }else if(cmd.type === 'show-panel'){
       this.setState({showPanel : true});
+      return;
     }else if(cmd.type === 'toggle-panel'){
       this.setState({showPanel : !this.state.showPanel});
+      return;
+    }else if(cmd.type === 'change-propertyPanelData'){
+      this.setState({propertyPanelData : cmd.info});
+      this.setState({message:"更改对象属性"});
+      return;
     }
+    this.setState({message:cmd.type});
   }
 
   render(){
@@ -46,9 +62,10 @@ class App extends React.Component{
           <div id="sizeTracker"></div>
         </div>
         <div className="statusbar">
-          <StatusBar currentTool={this.state.currentTool}/>
+          <StatusBar message={this.state.message}/>
         </div>
-        <PropertyPanel onCommand={this.execute} show={this.state.showPanel}/>
+        <PropertyPanel onCommand={this.execute} show={this.state.showPanel}
+          data={this.state.propertyPanelData}/>
       </div>
     );
   }

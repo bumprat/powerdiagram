@@ -4,6 +4,9 @@ $font-stack: Helvetica, Tahoma, Arial, STXihei, "华文细黑", "Microsoft YaHei
 $background-color: black;
 $foreground-color: #44aaee;
 $text-color: white;
+$property-panel-width: 300px;
+$property-panel-padding: 20px;
+$property-panel-close-width: 30px;
 
 @mixin anchor-button($padding){
   background: $background-color;
@@ -84,43 +87,69 @@ html{
           position: absolute;
           top:0px;
           background-color: lighten($background-color, 20%);
-          height: 100%;
-          width: 300px;
-          padding: 20px;
-          display: table;
+          height: 100vh;
+          width: $property-panel-width;
           &.hide{
-            right: -340px;
+            right: -$property-panel-width;
           }
           &.show{
-            right: 0px;            
+            right: 0px;
           }
           .close{
             position: absolute;
             display: inline-block;
-            left: -30px;
+            left: -$property-panel-close-width;
             top: 30%;
             a{
               @include anchor-button(0);
-              width: 30px;
-              line-height: 30px;
+              width: $property-panel-close-width;
               border: none;
               background-color: lighten($background-color, 20%);
             }
           }
-          .top{
-            display: table-row;
-            .title{
-              display: table-cell;
-              width: 100%;
-              text-align: center;
-            }
-            .middle{
-              display: table-row;
-              height: 100%;
-              overflow:scroll;
-            }
-            .bottom{
-              display: table-row;
+          .scroll {
+            height: 100%;
+            overflow: auto;
+            .padding{
+              padding: $property-panel-padding;
+              .top{
+                .title{
+                  text-align: center;
+                }
+              }
+              .middle{
+                height: 100%;
+                background-color: lighten($background-color, 20%);
+                .propertyItem{
+                  padding: 10px 0px 10px 0px;
+                  border-width: 0px 0px 1px 0px;
+                  border-style: solid;
+                  border-color: $background-color;
+                  .propertyLabel{
+                    padding-bottom: 5px;
+                  }
+                  .location-x, .location-y{
+                    width: $property-panel-width/2-20px;
+                    display: inline-block;
+                    .label, input{
+                      display: inline-block;
+                    }
+                    .label{
+                      width: 20px;
+                    }
+                    input{
+                      width: $property-panel-width/2-20px-30px;
+                      background-color: lighten($background-color,30%);
+                      border: none;
+                      color: white;
+                      text-align: center;
+                    }
+                  }
+                  .full{
+                    width: 100%;
+                  }
+                }
+              }
             }
           }
         }

@@ -158,7 +158,6 @@ function mount(Raphael){
       _.remove(paper._selection, (item)=>item===el);
       updateBBox();
     }
-    console.log(1)
     paper._selection.Clear = function(){
       _.remove(paper._selection, ()=>true);
       updateBBox();
@@ -170,6 +169,34 @@ function mount(Raphael){
         }else{
           el.BBox(false);
         }
+      });
+    }
+    eve.on('entity.click.*', function(e){
+      var el = this;
+      paper._selection.Clear(el);
+      paper._selection.Push(el);
+      window.execute({'type':'show-panel'});
+      window.execute({
+        type: "change-propertyPanelData",
+        info: {
+          def: el.data('def'),
+          val: el.data('data'),
+          target: el
+        }
+      })
+    });
+  }
+  Raphael.fn.nameResolver = function(data, element){
+    if(paper.entities.length<1){return};
+    var dup = true;
+    while(dup){
+      _.forEach(paper.entities, function(el){
+        if(element!==el && el.data('data').name===data.name){
+          data.name = data.name+"_1";
+          dup = true;
+          return false;
+        }
+        dup = false;
       });
     }
   }

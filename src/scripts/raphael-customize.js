@@ -24,14 +24,11 @@ function raphaelInit(){
   paper.resizable($('.middle')[0])();
   paper.selectable();
   var psub = paper.substation({
-    name: "变电站1",
-    voltageLevel: "110kV",
+    name: "厂站1",
     location: {x: 100, y: 100}
   });
   var psub = paper.substation({
-    name: "变电站2",
-    voltageLevel: "110kV",
-    location: {x: 200, y: 200}
+    voltageLevel: "110kV"
   });
   psub.update({voltageLevel: "35kV"});
   window.psub=psub;

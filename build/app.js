@@ -48478,9 +48478,15 @@ var App = function (_React$Component) {
       currentTool: {
         "绘制": "选择"
       },
-      showPanel: false
+      showPanel: false,
+      message: "无信息",
+      propertyPanelData: {
+        def: "none",
+        val: {},
+        target: null
+      }
     };
-    _this.execute = _this.execute.bind(_this);
+    window.execute = _this.execute = _this.execute.bind(_this);
     return _this;
   }
 
@@ -48493,14 +48499,23 @@ var App = function (_React$Component) {
         this.setState({
           currentTool: ct
         });
-        return false;
+        this.setState({ message: "选择工具:【" + cmd.info.group + "】" + cmd.info.toolName });
+        return;
       } else if (cmd.type === 'hide-panel') {
         this.setState({ showPanel: false });
+        return;
       } else if (cmd.type === 'show-panel') {
         this.setState({ showPanel: true });
+        return;
       } else if (cmd.type === 'toggle-panel') {
         this.setState({ showPanel: !this.state.showPanel });
+        return;
+      } else if (cmd.type === 'change-propertyPanelData') {
+        this.setState({ propertyPanelData: cmd.info });
+        this.setState({ message: "更改对象属性" });
+        return;
       }
+      this.setState({ message: cmd.type });
     }
   }, {
     key: 'render',
@@ -48522,9 +48537,10 @@ var App = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'statusbar' },
-          _react2.default.createElement(_statusBar2.default, { currentTool: this.state.currentTool })
+          _react2.default.createElement(_statusBar2.default, { message: this.state.message })
         ),
-        _react2.default.createElement(_propertyPanel2.default, { onCommand: this.execute, show: this.state.showPanel })
+        _react2.default.createElement(_propertyPanel2.default, { onCommand: this.execute, show: this.state.showPanel,
+          data: this.state.propertyPanelData })
       );
     }
   }, {
@@ -48539,7 +48555,7 @@ var App = function (_React$Component) {
 
 exports.default = App;
 
-},{"./components/property-panel":190,"./components/status-bar":191,"./components/toolbar":193,"./raphael-customize":196,"lodash":26,"react":188}],190:[function(require,module,exports){
+},{"./components/property-panel":193,"./components/status-bar":194,"./components/toolbar":196,"./raphael-customize":199,"lodash":26,"react":188}],190:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48568,6 +48584,248 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var PropertyPanelCombo = function (_React$Component) {
+  _inherits(PropertyPanelCombo, _React$Component);
+
+  function PropertyPanelCombo(props) {
+    _classCallCheck(this, PropertyPanelCombo);
+
+    var _this = _possibleConstructorReturn(this, (PropertyPanelCombo.__proto__ || Object.getPrototypeOf(PropertyPanelCombo)).call(this, props));
+
+    _this.change = _this.change.bind(_this);
+    return _this;
+  }
+
+  _createClass(PropertyPanelCombo, [{
+    key: 'change',
+    value: function change(e) {
+      this.props.onChangeData(this.props.def.propName, e.target.value);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var options = _lodash2.default.map(this.props.def.valEnum.split('|'), function (v) {
+        return _react2.default.createElement(
+          'option',
+          { key: v, value: v },
+          v
+        );
+      });
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+          'select',
+          { className: 'full', value: this.props.data, onChange: this.change },
+          options
+        )
+      );
+    }
+  }]);
+
+  return PropertyPanelCombo;
+}(_react2.default.Component);
+
+exports.default = PropertyPanelCombo;
+
+},{"lodash":26,"prop-types":32,"react":188}],191:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PropertyPanelPoint = function (_React$Component) {
+  _inherits(PropertyPanelPoint, _React$Component);
+
+  function PropertyPanelPoint(props) {
+    _classCallCheck(this, PropertyPanelPoint);
+
+    var _this = _possibleConstructorReturn(this, (PropertyPanelPoint.__proto__ || Object.getPrototypeOf(PropertyPanelPoint)).call(this, props));
+
+    _this.changeX = _this.changeX.bind(_this);
+    _this.changeY = _this.changeY.bind(_this);
+    return _this;
+  }
+
+  _createClass(PropertyPanelPoint, [{
+    key: 'changeX',
+    value: function changeX(e) {
+      if (!isNaN(e.target.value)) {
+        this.props.onChangeData(this.props.def.propName + '.x', Number(e.target.value));
+      }
+    }
+  }, {
+    key: 'changeY',
+    value: function changeY(e) {
+      if (!isNaN(e.target.value)) {
+        this.props.onChangeData(this.props.def.propName + '.y', Number(e.target.value));
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+          'div',
+          { className: 'location-x' },
+          _react2.default.createElement(
+            'div',
+            { className: 'label' },
+            'x:'
+          ),
+          _react2.default.createElement('input', { type: 'text', value: Math.round(this.props.data.x * 100) / 100, onChange: this.changeX })
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'location-y' },
+          _react2.default.createElement(
+            'div',
+            { className: 'label' },
+            'y:'
+          ),
+          _react2.default.createElement('input', { type: 'text', value: Math.round(this.props.data.y * 100) / 100, onChange: this.changeY })
+        )
+      );
+    }
+  }]);
+
+  return PropertyPanelPoint;
+}(_react2.default.Component);
+
+exports.default = PropertyPanelPoint;
+
+},{"lodash":26,"prop-types":32,"react":188}],192:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PropertyPanelText = function (_React$Component) {
+  _inherits(PropertyPanelText, _React$Component);
+
+  function PropertyPanelText(props) {
+    _classCallCheck(this, PropertyPanelText);
+
+    var _this = _possibleConstructorReturn(this, (PropertyPanelText.__proto__ || Object.getPrototypeOf(PropertyPanelText)).call(this, props));
+
+    _this.change = _this.change.bind(_this);
+    return _this;
+  }
+
+  _createClass(PropertyPanelText, [{
+    key: 'change',
+    value: function change(e) {
+      this.props.onChangeData(this.props.def.propName, e.target.value);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement('input', { type: 'text', className: 'full', value: this.props.data, onChange: this.change })
+      );
+    }
+  }]);
+
+  return PropertyPanelText;
+}(_react2.default.Component);
+
+exports.default = PropertyPanelText;
+
+},{"lodash":26,"prop-types":32,"react":188}],193:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _dataDefinitions = require('../data-definitions');
+
+var _dataDefinitions2 = _interopRequireDefault(_dataDefinitions);
+
+var _propertyPanelPoint = require('./property-panel-point');
+
+var _propertyPanelPoint2 = _interopRequireDefault(_propertyPanelPoint);
+
+var _propertyPanelCombo = require('./property-panel-combo');
+
+var _propertyPanelCombo2 = _interopRequireDefault(_propertyPanelCombo);
+
+var _propertyPanelText = require('./property-panel-text');
+
+var _propertyPanelText2 = _interopRequireDefault(_propertyPanelText);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var PropertyPanel = function (_React$Component) {
   _inherits(PropertyPanel, _React$Component);
 
@@ -48579,9 +48837,7 @@ var PropertyPanel = function (_React$Component) {
     _this.hidePanel = _this.hidePanel.bind(_this);
     _this.showPanel = _this.showPanel.bind(_this);
     _this.togglePanel = _this.togglePanel.bind(_this);
-    window.showPanel = _this.showPanel.bind(_this);
-    window.hidePanel = _this.hidePanel.bind(_this);
-    window.togglePanel = _this.togglePanel.bind(_this);
+    _this.changeData = _this.changeData.bind(_this);
     _this.state = {
       show: false
     };
@@ -48606,8 +48862,80 @@ var PropertyPanel = function (_React$Component) {
       this.props.onCommand({ type: 'toggle-panel' });
     }
   }, {
+    key: 'changeData',
+    value: function changeData(path, value) {
+      var el = this.props.data.target;
+      var data = el.data('data');
+      _lodash2.default.set(data, path, value);
+      el.update(data);
+      window.execute({
+        type: "change-propertyPanelData",
+        info: {
+          def: el.data('def'),
+          val: el.data('data'),
+          target: el
+        }
+      });
+      el.BBox(true);
+    }
+  }, {
     key: 'render',
     value: function render() {
+      var propertyItems = [];
+      var self = this;
+      _lodash2.default.forOwn(this.props.data.val, function (value, key) {
+        var def = _lodash2.default.get(_lodash2.default.filter(_dataDefinitions2.default[self.props.data.def], _lodash2.default.iteratee({ propName: key })), '[0]', {});
+        var sortOrder = _lodash2.default.indexOf(_dataDefinitions2.default[self.props.data.def], def);
+        if (def.propType === 'point') {
+          propertyItems.push({
+            item: _react2.default.createElement(
+              'div',
+              { className: 'propertyItem', key: key },
+              _react2.default.createElement(
+                'div',
+                { className: 'propertyLabel' },
+                def.propChName
+              ),
+              _react2.default.createElement(_propertyPanelPoint2.default, { data: value, def: def,
+                onChangeData: self.changeData })
+            ),
+            sortOrder: sortOrder
+          });
+        } else if (def.propType === 'enum') {
+          propertyItems.push({
+            item: _react2.default.createElement(
+              'div',
+              { className: 'propertyItem', key: key },
+              _react2.default.createElement(
+                'div',
+                { className: 'propertyLabel' },
+                def.propChName
+              ),
+              _react2.default.createElement(_propertyPanelCombo2.default, { data: value, def: def,
+                onChangeData: self.changeData })
+            ),
+            sortOrder: sortOrder
+          });
+        } else if (def.propType === 'string') {
+          propertyItems.push({
+            item: _react2.default.createElement(
+              'div',
+              { className: 'propertyItem', key: key },
+              _react2.default.createElement(
+                'div',
+                { className: 'propertyLabel' },
+                def.propChName
+              ),
+              _react2.default.createElement(_propertyPanelText2.default, { data: value, def: def,
+                onChangeData: self.changeData })
+            ),
+            sortOrder: sortOrder
+          });
+        }
+      });
+      propertyItems = _lodash2.default.map(_lodash2.default.sortBy(propertyItems, _lodash2.default.iteratee('sortOrder')), function (o) {
+        return o.item;
+      });
       return _react2.default.createElement(
         'div',
         { id: 'propertyPanel', className: this.props.show ? 'show' : 'hide' },
@@ -48617,23 +48945,31 @@ var PropertyPanel = function (_React$Component) {
           _react2.default.createElement(
             'a',
             { href: '#', onClick: this.togglePanel },
-            this.props.show ? 'x' : '属性窗口'
+            this.props.show ? '隐藏' : '属性窗口'
           )
         ),
         _react2.default.createElement(
           'div',
-          { className: 'top' },
+          { className: 'scroll' },
           _react2.default.createElement(
             'div',
-            { className: 'title' },
-            '123'
+            { className: 'padding' },
+            _react2.default.createElement(
+              'div',
+              { className: 'top' },
+              _react2.default.createElement(
+                'div',
+                { className: 'title' },
+                this.props.data.val.name
+              )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'middle' },
+              propertyItems
+            ),
+            _react2.default.createElement('div', { className: 'bottom' })
           )
-        ),
-        _react2.default.createElement('div', { className: 'middle' }),
-        _react2.default.createElement(
-          'div',
-          { className: 'bottom' },
-          '\u5C5E\u6027\u9875'
         )
       );
     }
@@ -48642,14 +48978,16 @@ var PropertyPanel = function (_React$Component) {
   return PropertyPanel;
 }(_react2.default.Component);
 
-PropertyPanel.protapTypes = {
-  data: _propTypes2.default.object
+PropertyPanel.propTypes = {
+  onCommand: _propTypes2.default.func.isRequired,
+  show: _propTypes2.default.bool,
+  data: _propTypes2.default.object.isRequired
 };
 
 exports.default = PropertyPanel;
 
-},{"lodash":26,"prop-types":32,"react":188}],191:[function(require,module,exports){
-'use strict';
+},{"../data-definitions":197,"./property-panel-combo":190,"./property-panel-point":191,"./property-panel-text":192,"lodash":26,"prop-types":32,"react":188}],194:[function(require,module,exports){
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -48657,7 +48995,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require('react');
+var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -48679,18 +49017,15 @@ var StatusBar = function (_React$Component) {
   }
 
   _createClass(StatusBar, [{
-    key: 'render',
+    key: "render",
     value: function render() {
       return _react2.default.createElement(
-        'div',
-        { className: 'statusbar-container' },
+        "div",
+        { className: "statusbar-container" },
         _react2.default.createElement(
-          'p',
+          "p",
           null,
-          '\u5F53\u524D\u5DE5\u5177: ',
-          _.map(this.props.currentTool, function (o, k) {
-            return '[' + k + ']' + o;
-          }).join(' ')
+          this.props.message
         )
       );
     }
@@ -48701,7 +49036,7 @@ var StatusBar = function (_React$Component) {
 
 exports.default = StatusBar;
 
-},{"react":188}],192:[function(require,module,exports){
+},{"react":188}],195:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48787,7 +49122,7 @@ ToolbarRadioButton.propTypes = {
 
 exports.default = ToolbarRadioButton;
 
-},{"lodash":26,"prop-types":32,"react":188}],193:[function(require,module,exports){
+},{"lodash":26,"prop-types":32,"react":188}],196:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48858,7 +49193,7 @@ Toolbar.propTypes = {
 
 exports.default = Toolbar;
 
-},{"./toolbar-radio-button":192,"prop-types":32,"react":188}],194:[function(require,module,exports){
+},{"./toolbar-radio-button":195,"prop-types":32,"react":188}],197:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48871,7 +49206,7 @@ var dataDef = {
     propName: "name",
     propChName: "名称",
     propType: "string",
-    defaultValue: "厂站{i}"
+    defaultValue: "厂站"
   }, {
     propName: "voltageLevel",
     propChName: "电压等级",
@@ -48888,7 +49223,7 @@ var dataDef = {
     propName: "name",
     propChName: "名称",
     propType: "string",
-    defaultValue: "交流线路{i}"
+    defaultValue: "交流线路"
   }, {
     propName: "voltageLevel",
     propChName: "电压等级",
@@ -48918,14 +49253,14 @@ var dataDef = {
   }, {
     propName: "path",
     propChName: "路径字符串",
-    propType: "double",
+    propType: "text",
     defaultValue: ""
   }],
   generation: [{
     propName: "name",
     propChName: "名称",
     propType: "string",
-    defaultValue: "发电厂{i}"
+    defaultValue: "发电厂"
   }, {
     propName: "voltageLevel",
     propChName: "电压等级",
@@ -48942,7 +49277,7 @@ var dataDef = {
 
 exports.default = dataDef;
 
-},{}],195:[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -48975,7 +49310,7 @@ window._ = _lodash2.default;
 
 _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.getElementById('app'));
 
-},{"./app":189,"jquery":25,"lodash":26,"react":188,"react-dom":35}],196:[function(require,module,exports){
+},{"./app":189,"jquery":25,"lodash":26,"react":188,"react-dom":35}],199:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49026,14 +49361,11 @@ function raphaelInit() {
   paper.resizable((0, _jquery2.default)('.middle')[0])();
   paper.selectable();
   var psub = paper.substation({
-    name: "变电站1",
-    voltageLevel: "110kV",
+    name: "厂站1",
     location: { x: 100, y: 100 }
   });
   var psub = paper.substation({
-    name: "变电站2",
-    voltageLevel: "110kV",
-    location: { x: 200, y: 200 }
+    voltageLevel: "110kV"
   });
   psub.update({ voltageLevel: "35kV" });
   window.psub = psub;
@@ -49042,7 +49374,7 @@ function raphaelInit() {
 
 exports.default = _lodash2.default.once(raphaelInit);
 
-},{"./data-definitions":194,"./raphael-extensions":197,"./raphael-theme-default":198,"jquery":25,"lodash":26,"raphael":34}],197:[function(require,module,exports){
+},{"./data-definitions":197,"./raphael-extensions":200,"./raphael-theme-default":201,"jquery":25,"lodash":26,"raphael":34}],200:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49214,7 +49546,6 @@ function mount(Raphael) {
       });
       updateBBox();
     };
-    console.log(1);
     paper._selection.Clear = function () {
       _lodash2.default.remove(paper._selection, function () {
         return true;
@@ -49230,12 +49561,42 @@ function mount(Raphael) {
         }
       });
     }
+    eve.on('entity.click.*', function (e) {
+      var el = this;
+      paper._selection.Clear(el);
+      paper._selection.Push(el);
+      window.execute({ 'type': 'show-panel' });
+      window.execute({
+        type: "change-propertyPanelData",
+        info: {
+          def: el.data('def'),
+          val: el.data('data'),
+          target: el
+        }
+      });
+    });
+  };
+  Raphael.fn.nameResolver = function (data, element) {
+    if (paper.entities.length < 1) {
+      return;
+    };
+    var dup = true;
+    while (dup) {
+      _lodash2.default.forEach(paper.entities, function (el) {
+        if (element !== el && el.data('data').name === data.name) {
+          data.name = data.name + "_1";
+          dup = true;
+          return false;
+        }
+        dup = false;
+      });
+    }
   };
 }
 
 exports.default = mount;
 
-},{"jquery":25,"jquery-mousewheel":24,"lodash":26,"raphael":34}],198:[function(require,module,exports){
+},{"jquery":25,"jquery-mousewheel":24,"lodash":26,"raphael":34}],201:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49253,6 +49614,10 @@ var _lodash2 = _interopRequireDefault(_lodash);
 var _jquery = require("jquery");
 
 var _jquery2 = _interopRequireDefault(_jquery);
+
+var _dataDefinitions = require("./data-definitions");
+
+var _dataDefinitions2 = _interopRequireDefault(_dataDefinitions);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -49301,7 +49666,6 @@ function mount(Raphael) {
       eve.on('raphael.attr.path.' + el.id, updateBBox);
       updateBBox();
       el._box.show();
-      console.log(1);
     } else {
       eve.off('raphael.attr.path.' + el.id, updateBBox);
       el._box.hide();
@@ -49314,10 +49678,8 @@ function mount(Raphael) {
 
   Raphael.el.selectable = function () {
     var el = this;
-    console.log(2);
-    el.click(function (e) {
-      el.paper._selection.Clear(el);
-      el.paper._selection.Push(el);
+    el.click(function () {
+      eve('entity.click.' + el.id, el);
     });
   };
 
@@ -49336,18 +49698,27 @@ function mount(Raphael) {
 
   Raphael.fn.substation = function (data) {
     var paper = this;
-    var radius1 = 10,
-        radius2 = 20,
-        radius3 = 30;
+    var radius = 10;
     var psub = paper.path();
+    var defaultValue = _lodash2.default.fromPairs(_lodash2.default.map(_dataDefinitions2.default['substation'], function (p) {
+      return [p.propName, p.defaultValue];
+    }));
+    _lodash2.default.defaults(data, defaultValue);
     psub.data('stroke-width', 3);
-    psub.selectable();
+    psub.data('def', 'substation');
     psub.draggable();
+    psub.selectable();
     psub.update = function (data) {
       var data = _lodash2.default.defaults(data, psub.data('data'));
+      paper.nameResolver(data, psub);
       var color = { '330kV': '#ff5555', '750kV': '#ffff55', '110kV': '#55ffff', '35kV': '#55ff55' };
+      var rings = { '330kV': 3, '750kV': 5, '110kV': 1, '35kV': 1 };
+      var path = "";
+      for (var i = 1; i <= _lodash2.default.get(rings, data.voltageLevel, rings['35kV']); i++) {
+        path += psCircle(data.location.x, data.location.y, radius * i);
+      }
       this.attr({
-        'path': psCircle(data.location.x, data.location.y, radius1) + psCircle(data.location.x, data.location.y, radius2) + psCircle(data.location.x, data.location.y, radius3),
+        'path': path,
         'stroke': _lodash2.default.get(color, data.voltageLevel, color['35kV']),
         'fill-opacity': 0.01,
         'fill': 'black',
@@ -49363,4 +49734,4 @@ function mount(Raphael) {
 
 exports.default = mount;
 
-},{"jquery":25,"lodash":26,"raphael":34}]},{},[195]);
+},{"./data-definitions":197,"jquery":25,"lodash":26,"raphael":34}]},{},[198]);
