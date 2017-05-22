@@ -3,124 +3,233 @@ import _ from "lodash"
 import $ from "jquery"
 import dataDef from './data-definitions'
 
-function psCircle(x, y, r){
-  // 近似圆形，详见：stackoverflow how to create circle with bezier curves
-  var cr = 0.5523*r;
-  return 'M'+x+','+y+'m'+r+','+'0'
-   +'c'+'0'+','+(-cr)+','+(cr-r)+','+(-r)+','+(-r)+','+(-r)
-   +'c'+(-cr)+','+'0'+','+(-r)+','+(r-cr)+','+(-r)+','+r
-   +'c'+'0'+','+(cr)+','+(r-cr)+','+(r)+','+(r)+','+(r)
-   +'c'+(cr)+','+'0'+','+(r)+','+(cr-r)+','+(r)+','+(-r);
-}
-
-
-
-
 
 function mount(Raphael){
-  /*
-  function shapeMouseoverHandler(){
-    if(_.hasIn(this, 'shapeGlow')){
-      this.shapeGlow.remove();
-    }
-    this.shapeGlow = this.glow({color:'white', width:3, opacity:0.3});
-  }
-  function shapeMouseoutHandler(){
-    if(_.hasIn(this, 'shapeGlow')){
-      this.shapeGlow.remove();
-    }
-  }
-  Raphael.el.mouseoverGlow = function(remove){
-    var el = this;
-    if(remove){
-      if(_.hasIn(el, 'shapeGlow')){
-        el.shapeGlow.remove();
-        el.unmouseover(shapeGlowMouseoverHandler.bind(el)).unmouseout(shapeGlowMouseoutHandler.bind(el));
-      }
-    }else{
-      el.mouseover(shapeGlowMouseoverHandler.bind(el)).mouseout(shapeGlowMouseoutHandler.bind(el));
-    }
-  }*/
-
-  Raphael.el.BBox = function(show){
-    var el = this;
-    el._box = el._box || el.paper.rect(0,0,0,0).hide()
-    .attr({
-      fill: 'none',
-      stroke:"white",
-      'stroke-dasharray':'--',
-      'stroke-linecapstring':'round',
-      'stroke-width': 1/el.paper.getScale()
-    });
-    el._box.data('stroke-width', 2);
-    if(show){
-      eve.on('raphael.attr.path.'+el.id, updateBBox);
-      updateBBox();
-      el._box.show();
-    }else{
-      eve.off('raphael.attr.path.'+el.id, updateBBox);
-      el._box.hide();
-    }
-    function updateBBox(){
-      var BBox = el.getBBox();
-      el._box.attr({x:BBox.x, y:BBox.y, width: BBox.width, height: BBox.height});
-    }
-  }
-
-  Raphael.el.selectable = function(){
-    var el = this;
-    el.click(function(){
-      eve('entity.click.'+el.id, el);
-    })
-  }
-
-  Raphael.el.draggable = function(){
-    var el = this;
-    var origin;
-    el.drag(function (dx, dy, x, y){
-      var scale = paper.getScale();
-      x = origin.x+dx/scale;
-      y = origin.y+dy/scale;
-      el.update({location:{x:x, y:y}});
-    }, function(){
-      origin = el.data('data').location;
-    }, function(){
-    });
-  }
-
-
-  Raphael.fn.substation = function(data){
+  var color = {'330kV':'#ff5555', '750kV':'#ffff55', '110kV':'#55ffff', '35kV' : '#55ff55'};
+  Raphael.fn.paintPseudo = function(){
     var paper = this;
-    var radius = 10;
-    var psub = paper.path();
-    var defaultValue = _.fromPairs(_.map(dataDef['substation'],(p)=>[p.propName, p.defaultValue]));
-    _.defaults(data, defaultValue);
-    psub.data('stroke-width', 3);
-    psub.data('def', 'substation');
-    psub.draggable();
-    psub.selectable();
-    psub.update = (function(data){
-      var data = _.defaults(data, psub.data('data'));
-      paper.nameResolver(data, psub);
-      var color = {'330kV':'#ff5555', '750kV':'#ffff55', '110kV':'#55ffff', '35kV' : '#55ff55'};
-      var rings = {'330kV':3, '750kV':5, '110kV':1, '35kV' : 1};
-      var path = "";
-      for(var i=1; i<=_.get(rings, data.voltageLevel, rings['35kV']); i++){
-        path+=psCircle(data.location.x, data.location.y, radius*i);
-      }
-      this.attr({
-        'path' : path,
-        'stroke': _.get(color, data.voltageLevel, color['35kV']),
-        'fill-opacity':0.01,
-        'fill':'black',
-        'stroke-width': psub.data('stroke-width')/paper.getScale()
-      });
-      psub.data('data', data);
-    }).bind(psub);
-    psub.update(data);
-    paper.entities.push(psub);
-    return psub;
+    paper.pseudo = [];
+    paper.substation({}, true);
+    paper.powerline({}, true);
   }
+  Raphael.fn.substation = function(data, pseudo){
+    var paper = this;
+    var radius = 3;
+    var rings = {'330kV':3, '750kV':5, '110kV':1, '35kV' : 1};
+    var shape = paper.path();
+    var defaultValue = _.cloneDeep(_.fromPairs(_.map(dataDef['substation'],(p)=>[p.propName, p.defaultValue])));
+    data = _.defaults(data, defaultValue);
+    shape.data('stroke-width', 1);
+    shape.data('data', data);
+    if(pseudo){
+      paper.pseudo.push(shape);
+      shape.insertIntoLayer('pseudo');
+      shape.alwaysFollow();
+      shape.data('def', 'pointer').hide();
+      shape.data('pseudo', 'substation');
+    }else{
+      paper.entities.push(shape);
+      shape.insertIntoLayer('substation');
+      shape.draggable();
+      shape.selectable();
+      shape.data('def', 'substation');
+      var text = paper.text(0,0,"").attr({
+        'stroke' : 'none',
+        'font-size' : 5,
+        'fill' : 'white'
+      });
+      text.data('font-size', 20);
+      text.data('stroke-width', 1);
+      text.update = function(){
+        var data = shape.data('data');
+        var box = shape.getBBox();
+        text.attr({
+          'x': data.location.x,
+          'y': box.y2,
+          'text' : data.name,
+          //'font-size' : text.data('font-size')/text.paper.getScale(),
+          'stroke-width' : text.data('stroke-width')/text.paper.getScale()
+        });
+      };
+      shape.accessory(text);
+    }
+    var prevname = '';
+    shape.update = function(){
+      var data = shape.data('data');
+      if(data.name !== prevname){
+        paper.nameResolver(data, shape);
+        prevname = data.name;
+      }
+      var path = "";
+      for(var i=1; i<=_.get(rings, data.voltageLevel, rings[defaultValue.voltageLevel]); i++){
+        path+=paper.psCircle(data.location.x, data.location.y, radius*i);
+      }
+      shape.attr({
+        'path' : path,
+        'stroke': _.get(color, data.voltageLevel, color[defaultValue.voltageLevel]),
+        'fill-opacity':1,
+        'fill':'black',
+        'stroke-width': shape.data('stroke-width')/paper.getScale()
+      });
+      eve('pd.entity.update.'+shape.id, shape);
+    };
+    shape.update();
+    return shape;
+  }
+
+  Raphael.fn.powerline = function(data, pseudo){
+    var paper = this;
+    var shape = paper.path()
+    if(pseudo){
+      paper.pseudo.push(shape);
+      shape.insertIntoLayer('pseudo');
+      shape.alwaysFollow();
+      shape.data('def', 'pointer').hide();
+      shape.data('pseudo', 'powerline');
+      shape.data('radius', 3);
+      shape.data('data', {location:{}});
+      shape.attr({
+        'stroke': 'none',
+        'fill' : color['330kV']
+      });
+      shape.update = function(){
+        data = shape.data('data');
+        var scale = shape.paper.getScale();
+        var path = paper.psCircle(data.location.x, data.location.y, shape.data('radius')/scale) + 'Z';
+        shape.attr({'path':path});
+      };
+      shape.update();
+    }else{
+      var defaultValue = _.cloneDeep(_.fromPairs(_.map(dataDef['powerline'],(p)=>[p.propName, p.defaultValue])));
+      data = _.defaults(data, defaultValue);
+      shape.data('stroke-width', 2);
+      shape.data('data', data);
+      shape.insertIntoLayer('powerline');
+      paper.entities.push(shape);
+      shape.draggable();
+      shape.selectable();
+      shape.data('def', 'powerline');
+
+      var text = paper.text(0,0,"").attr({
+        'stroke' : 'none',
+        'font-size' : 5,
+        'fill' : 'white'
+      });
+      text.data('font-size', 20);
+      text.data('stroke-width', 1);
+      var prevname = '';
+      text.update = function(){
+        var data = shape.data('data');
+        if(data.name !== prevname){
+          paper.nameResolver(data, shape);
+          prevname = data.name;
+        }
+        var box = shape.getBBox();
+        text.attr({
+          'x': box.x+box.width/2,
+          'y': box.y+box.height/2,
+          'text' : data.name,
+          //'font-size' : text.data('font-size')/text.paper.getScale(),
+          'stroke-width' : text.data('stroke-width')/text.paper.getScale()
+        });
+      };
+      shape.accessory(text);
+
+      shape._cpoints=[];
+      shape.addPoint = function(point){
+        shape.data('data').pointList.push(point);
+        var np = paper.pointHandle(point, shape);
+        shape._cpoints.push(np);
+      }
+      shape.removePoint = function(point){
+        _.pull(shape.data('data').pointList, point);
+        _.pull(shape._cpoints, _.find(shape._cpoints, (p)=>p.data('data')===point));
+      }
+
+      shape.update=function(){
+        var pointList = shape.data('data').pointList;
+        var path = paper.psPolyline(pointList);
+        shape.attr({
+          'path': path,
+          'stroke': color[shape.data('data').voltageLevel],
+          'stroke-width' : shape.data('stroke-width')/paper.getScale()
+        });
+        eve('pd.entity.update.'+shape.id, shape);
+      };
+      _.forEach(data.pointList, function(point){
+        var np = paper.pointHandle(point, shape);
+        shape._cpoints.push(np);
+      });
+      shape.update();
+    }
+    return shape;
+  }
+
+  Raphael.fn.pointHandle = function(data, target){
+    var paper = this;
+    var shape = paper.path().insertIntoLayer('BBox');
+    shape.data('def', 'handler');
+    shape.data('stroke-width', 1);
+    shape.data('size', 10);
+    shape.data('data', data);
+    shape.attr({
+      'stroke':'white',
+      'fill' : '#aaaaaa'
+    });
+    shape._target = target;
+    var origin;
+    var dragging;
+    var startPoint;
+    var endPoint;
+    shape.drag(function (dx, dy, x, y, e){
+      if(dragging){
+        var scale = shape.paper.getScale();
+        var nx = origin.x + dx/scale;
+        var ny = origin.y + dy/scale;
+        var detect;
+        shape.data('data').x=nx;
+        shape.data('data').y=ny;
+        if(startPoint || endPoint){
+          detect = shape.paper.detectEntities(nx, ny, ['substation', 'generation']);
+          if(detect.length>0){
+            _.forEach(shape.paper.entities, function(e){
+              e.emphisis(e===detect[0]);
+            });
+            startPoint && (shape._target.data('data').startSub=detect[0].data('data').name);
+            endPoint && (shape._target.data('data').endSub=detect[0].data('data').name);
+          }else {
+            _.forEach(shape.paper.entities, function(e){
+              e.emphisis(false);
+            });
+            startPoint && (shape._target.data('data').startSub="");
+            endPoint && (shape._target.data('data').endSub="");
+          }
+        }
+        shape.update();
+      }
+    }, function(x, y, e){
+      origin = _.clone(shape.data('data'));
+      dragging = true;
+      var cpoints = shape._target._cpoints;
+      var index = _.indexOf(cpoints, shape);
+      startPoint = index===0?true:false;
+      endPoint = !startPoint || index===(cpoints.length-1)?true:false;
+    }, function(e){
+      dragging = false;
+    });
+    shape.update = function(){
+      var path = paper.psRect(shape.data('data').x, shape.data('data').y,
+        shape.data('size')/paper.getScale());
+      shape.attr({
+        'path': path,
+        'stroke-width' : shape.data('stroke-width')/paper.getScale()
+      });
+      shape._target.update();
+    };
+    shape.update();
+    return shape;
+  }
+
 }
 
 export default mount

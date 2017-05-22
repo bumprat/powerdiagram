@@ -48458,6 +48458,12 @@ var _propertyPanel = require('./components/property-panel');
 
 var _propertyPanel2 = _interopRequireDefault(_propertyPanel);
 
+var _portPanel = require('./components/port-panel');
+
+var _portPanel2 = _interopRequireDefault(_portPanel);
+
+var _dataDefinitions = require('./data-definitions');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -48484,9 +48490,13 @@ var App = function (_React$Component) {
         def: "none",
         val: {},
         target: null
-      }
+      },
+      portdata: "",
+      port: "import",
+      show: false
     };
     window.execute = _this.execute = _this.execute.bind(_this);
+    _this.paper = null;
     return _this;
   }
 
@@ -48500,6 +48510,31 @@ var App = function (_React$Component) {
           currentTool: ct
         });
         this.setState({ message: "选择工具:【" + cmd.info.group + "】" + cmd.info.toolName });
+        _lodash2.default.forEach(this.paper.pseudo, function (o) {
+          return o.hide();
+        });
+
+        if (cmd.info.group === '绘制' && cmd.info.toolName === '选择') {
+          this.paper.currentTool = 'select';
+          this.paper.newLine();
+        }
+        if (cmd.info.group === '绘制' && cmd.info.toolName === '变电站') {
+          this.paper.currentTool = 'substation';
+          this.paper.newLine();
+        }
+        if (cmd.info.group === '绘制' && cmd.info.toolName === '输电线') {
+          this.paper.currentTool = 'powerline';
+          this.paper.newLine();
+        }
+        if (cmd.info.group === '绘制' && cmd.info.toolName === '平移') {
+          this.paper.currentTool = 'pan';
+          this.paper.newLine();
+        }
+        if (cmd.info.group === '绘制' && cmd.info.toolName === '故障') {
+          this.paper.currentTool = 'fault';
+          this.paper.fault();
+          this.paper.newLine();
+        }
         return;
       } else if (cmd.type === 'hide-panel') {
         this.setState({ showPanel: false });
@@ -48514,8 +48549,47 @@ var App = function (_React$Component) {
         this.setState({ propertyPanelData: cmd.info });
         this.setState({ message: "更改对象属性" });
         return;
+      } else if (cmd.type === 'button-click') {
+        if (cmd.info.toolName === "导出") {
+          this.setState({
+            showPort: true,
+            portdata: this.paper.export(),
+            port: "export"
+          });
+          return;
+        } else if (cmd.info.toolName === "导入") {
+          this.setState({
+            showPort: true,
+            port: "import"
+          });
+        } else if (cmd.info.toolName === "加载默认接线") {
+          this.setState({ showPort: false });
+          this.paper.import(_dataDefinitions.defaultData);
+          this.paper.viewAll();
+          return;
+        }
+      } else if (cmd.type === 'import-from-portPanel') {
+        this.setState({ showPort: false });
+        this.paper.import($.parseJSON(this.state.portdata));
+        this.paper.viewAll();
+        return;
+      } else if (cmd.type === 'hide-portPanel') {
+        this.setState({ showPort: false });
+        return;
+      } else if (cmd.type === 'import-text-change') {
+        this.setState({ portdata: cmd.info });
+        return;
+      } else if (cmd.type === 'message') {
+        this.setState({ message: cmd.info });
+        return;
+      } else if (cmd.type === 'pick') {
+        this.paper.pickEntity(cmd.info);
+        this.execute({ type: 'radio-button-click', info: {
+            group: "绘制",
+            toolName: "选择"
+          } });
+        return;
       }
-      this.setState({ message: cmd.type });
     }
   }, {
     key: 'render',
@@ -48531,7 +48605,7 @@ var App = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'middle' },
-          _react2.default.createElement('div', { id: 'stage' }),
+          _react2.default.createElement('div', { id: 'stage', tabIndex: '0' }),
           _react2.default.createElement('div', { id: 'sizeTracker' })
         ),
         _react2.default.createElement(
@@ -48540,13 +48614,16 @@ var App = function (_React$Component) {
           _react2.default.createElement(_statusBar2.default, { message: this.state.message })
         ),
         _react2.default.createElement(_propertyPanel2.default, { onCommand: this.execute, show: this.state.showPanel,
-          data: this.state.propertyPanelData })
+          data: this.state.propertyPanelData }),
+        _react2.default.createElement(_portPanel2.default, { data: this.state.portdata, onCommand: this.execute, type: this.state.port, show: this.state.showPort })
       );
     }
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      (0, _raphaelCustomize2.default)();
+      var paper = (0, _raphaelCustomize2.default)();
+      paper.currentTool = 'select';
+      window.devpaper = this.paper = paper;
     }
   }]);
 
@@ -48555,7 +48632,99 @@ var App = function (_React$Component) {
 
 exports.default = App;
 
-},{"./components/property-panel":193,"./components/status-bar":194,"./components/toolbar":196,"./raphael-customize":199,"lodash":26,"react":188}],190:[function(require,module,exports){
+},{"./components/port-panel":190,"./components/property-panel":195,"./components/status-bar":196,"./components/toolbar":199,"./data-definitions":200,"./raphael-customize":202,"lodash":26,"react":188}],190:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PortPanel = function (_React$Component) {
+  _inherits(PortPanel, _React$Component);
+
+  function PortPanel(props) {
+    _classCallCheck(this, PortPanel);
+
+    var _this = _possibleConstructorReturn(this, (PortPanel.__proto__ || Object.getPrototypeOf(PortPanel)).call(this, props));
+
+    _this.import = _this.import.bind(_this);
+    _this.hide = _this.hide.bind(_this);
+    _this.change = _this.change.bind(_this);
+    return _this;
+  }
+
+  _createClass(PortPanel, [{
+    key: 'import',
+    value: function _import() {
+      this.props.onCommand({
+        type: 'import-from-portPanel'
+      });
+    }
+  }, {
+    key: 'hide',
+    value: function hide() {
+      this.props.onCommand({
+        type: 'hide-portPanel',
+        info: ''
+      });
+    }
+  }, {
+    key: 'change',
+    value: function change(e) {
+      this.props.onCommand({
+        type: 'import-text-change',
+        info: e.target.value
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: "portPanel " + (this.props.show ? '' : 'hide') },
+        _react2.default.createElement(
+          'div',
+          { className: 'port' },
+          _react2.default.createElement('textarea', { id: 'port', onChange: this.change, value: this.props.data })
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'portPanelControls' },
+          this.props.type === "import" && _react2.default.createElement(
+            'a',
+            { href: '#', onClick: this.import },
+            '\u5BFC\u5165'
+          ),
+          _react2.default.createElement(
+            'a',
+            { href: '#', onClick: this.hide },
+            '\u6536\u8D77'
+          )
+        )
+      );
+    }
+  }]);
+
+  return PortPanel;
+}(_react2.default.Component);
+
+exports.default = PortPanel;
+
+},{"react":188}],191:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48628,7 +48797,80 @@ var PropertyPanelCombo = function (_React$Component) {
 
 exports.default = PropertyPanelCombo;
 
-},{"lodash":26,"prop-types":32,"react":188}],191:[function(require,module,exports){
+},{"lodash":26,"prop-types":32,"react":188}],192:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PropertyPanelObjectName = function (_React$Component) {
+  _inherits(PropertyPanelObjectName, _React$Component);
+
+  function PropertyPanelObjectName(props) {
+    _classCallCheck(this, PropertyPanelObjectName);
+
+    var _this = _possibleConstructorReturn(this, (PropertyPanelObjectName.__proto__ || Object.getPrototypeOf(PropertyPanelObjectName)).call(this, props));
+
+    _this.change = _this.change.bind(_this);
+    _this.pick = _this.pick.bind(_this);
+    return _this;
+  }
+
+  _createClass(PropertyPanelObjectName, [{
+    key: 'change',
+    value: function change(e) {
+      this.props.onChangeData(this.props.def.propName, e.target.value);
+    }
+  }, {
+    key: 'pick',
+    value: function pick() {
+      this.props.onPick(this.props.def.propName);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: 'objectName' },
+        _react2.default.createElement('input', { className: 'objectNameInput', type: 'text', value: this.props.data, onChange: this.change }),
+        _react2.default.createElement(
+          'a',
+          { className: 'objectNameSelect', onClick: this.pick },
+          '\u9009\u53D6'
+        )
+      );
+    }
+  }]);
+
+  return PropertyPanelObjectName;
+}(_react2.default.Component);
+
+exports.default = PropertyPanelObjectName;
+
+},{"lodash":26,"prop-types":32,"react":188}],193:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48719,7 +48961,7 @@ var PropertyPanelPoint = function (_React$Component) {
 
 exports.default = PropertyPanelPoint;
 
-},{"lodash":26,"prop-types":32,"react":188}],192:[function(require,module,exports){
+},{"lodash":26,"prop-types":32,"react":188}],194:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48781,7 +49023,7 @@ var PropertyPanelText = function (_React$Component) {
 
 exports.default = PropertyPanelText;
 
-},{"lodash":26,"prop-types":32,"react":188}],193:[function(require,module,exports){
+},{"lodash":26,"prop-types":32,"react":188}],195:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48818,6 +49060,10 @@ var _propertyPanelText = require('./property-panel-text');
 
 var _propertyPanelText2 = _interopRequireDefault(_propertyPanelText);
 
+var _propertyPanelObjectName = require('./property-panel-objectName');
+
+var _propertyPanelObjectName2 = _interopRequireDefault(_propertyPanelObjectName);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -48838,6 +49084,7 @@ var PropertyPanel = function (_React$Component) {
     _this.showPanel = _this.showPanel.bind(_this);
     _this.togglePanel = _this.togglePanel.bind(_this);
     _this.changeData = _this.changeData.bind(_this);
+    _this.pick = _this.pick.bind(_this);
     _this.state = {
       show: false
     };
@@ -48862,12 +49109,31 @@ var PropertyPanel = function (_React$Component) {
       this.props.onCommand({ type: 'toggle-panel' });
     }
   }, {
+    key: 'pick',
+    value: function pick(propName) {
+      var self = this;
+      var el = self.props.data.target;
+      this.props.onCommand({ type: 'pick', info: function info(shape) {
+          var data = el.data('data');
+          _lodash2.default.set(data, propName, shape.data('data').name);
+          el.update();
+          window.execute({
+            type: "change-propertyPanelData",
+            info: {
+              def: el.data('def'),
+              val: el.data('data'),
+              target: el
+            }
+          });
+        } });
+    }
+  }, {
     key: 'changeData',
     value: function changeData(path, value) {
       var el = this.props.data.target;
       var data = el.data('data');
       _lodash2.default.set(data, path, value);
-      el.update(data);
+      el.update();
       window.execute({
         type: "change-propertyPanelData",
         info: {
@@ -48883,6 +49149,7 @@ var PropertyPanel = function (_React$Component) {
     value: function render() {
       var propertyItems = [];
       var self = this;
+      var typeName = _dataDefinitions2.default[this.props.data.def] ? _lodash2.default.filter(_dataDefinitions2.default[this.props.data.def], { propName: "name" })[0].defaultValue : "";
       _lodash2.default.forOwn(this.props.data.val, function (value, key) {
         var def = _lodash2.default.get(_lodash2.default.filter(_dataDefinitions2.default[self.props.data.def], _lodash2.default.iteratee({ propName: key })), '[0]', {});
         var sortOrder = _lodash2.default.indexOf(_dataDefinitions2.default[self.props.data.def], def);
@@ -48931,6 +49198,21 @@ var PropertyPanel = function (_React$Component) {
             ),
             sortOrder: sortOrder
           });
+        } else if (def.propType === 'entityName') {
+          propertyItems.push({
+            item: _react2.default.createElement(
+              'div',
+              { className: 'propertyItem', key: key },
+              _react2.default.createElement(
+                'div',
+                { className: 'propertyLabel' },
+                def.propChName
+              ),
+              _react2.default.createElement(_propertyPanelObjectName2.default, { data: value, def: def, onPick: self.pick,
+                onChangeData: self.changeData })
+            ),
+            sortOrder: sortOrder
+          });
         }
       });
       propertyItems = _lodash2.default.map(_lodash2.default.sortBy(propertyItems, _lodash2.default.iteratee('sortOrder')), function (o) {
@@ -48960,7 +49242,7 @@ var PropertyPanel = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'title' },
-                this.props.data.val.name
+                typeName
               )
             ),
             _react2.default.createElement(
@@ -48986,7 +49268,7 @@ PropertyPanel.propTypes = {
 
 exports.default = PropertyPanel;
 
-},{"../data-definitions":197,"./property-panel-combo":190,"./property-panel-point":191,"./property-panel-text":192,"lodash":26,"prop-types":32,"react":188}],194:[function(require,module,exports){
+},{"../data-definitions":200,"./property-panel-combo":191,"./property-panel-objectName":192,"./property-panel-point":193,"./property-panel-text":194,"lodash":26,"prop-types":32,"react":188}],196:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49036,7 +49318,84 @@ var StatusBar = function (_React$Component) {
 
 exports.default = StatusBar;
 
-},{"react":188}],195:[function(require,module,exports){
+},{"react":188}],197:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ToolbarButton = function (_React$Component) {
+  _inherits(ToolbarButton, _React$Component);
+
+  function ToolbarButton(props) {
+    _classCallCheck(this, ToolbarButton);
+
+    var _this = _possibleConstructorReturn(this, (ToolbarButton.__proto__ || Object.getPrototypeOf(ToolbarButton)).call(this, props));
+
+    _this.handleClick = _this.handleClick.bind(_this);
+    return _this;
+  }
+
+  _createClass(ToolbarButton, [{
+    key: 'handleClick',
+    value: function handleClick(e) {
+      this.props.handleClick({
+        type: 'button-click',
+        info: {
+          group: this.props.group,
+          toolName: this.props.content
+        }
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'a',
+        { href: '#', className: 'toolbar-button', onClick: this.handleClick },
+        this.props.content
+      );
+    }
+  }]);
+
+  return ToolbarButton;
+}(_react2.default.Component);
+
+ToolbarButton.defaultProps = {
+  content: '按钮'
+};
+
+ToolbarButton.propTypes = {
+  content: _propTypes2.default.string,
+  handleClick: _propTypes2.default.func
+};
+
+exports.default = ToolbarButton;
+
+},{"lodash":26,"prop-types":32,"react":188}],198:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -49122,7 +49481,7 @@ ToolbarRadioButton.propTypes = {
 
 exports.default = ToolbarRadioButton;
 
-},{"lodash":26,"prop-types":32,"react":188}],196:[function(require,module,exports){
+},{"lodash":26,"prop-types":32,"react":188}],199:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -49138,6 +49497,10 @@ var _react2 = _interopRequireDefault(_react);
 var _toolbarRadioButton = require('./toolbar-radio-button');
 
 var _toolbarRadioButton2 = _interopRequireDefault(_toolbarRadioButton);
+
+var _toolbarButton = require('./toolbar-button');
+
+var _toolbarButton2 = _interopRequireDefault(_toolbarButton);
 
 var _propTypes = require('prop-types');
 
@@ -49170,14 +49533,18 @@ var Toolbar = function (_React$Component) {
           'div',
           { className: 'toolbar-group' },
           _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u9009\u62E9' }),
-          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u53D8\u7535\u7AD9' })
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u5E73\u79FB' }),
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u53D8\u7535\u7AD9' }),
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u8F93\u7535\u7EBF' }),
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u53D1\u7535\u5382' }),
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u6545\u969C' })
         ),
         _react2.default.createElement(
           'div',
           { className: 'toolbar-group' },
-          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u8F93\u7535\u7EBF' }),
-          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u53D1\u7535\u5382' }),
-          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u6545\u969C' })
+          _react2.default.createElement(_toolbarButton2.default, { handleClick: this.props.onCommand, group: '\u547D\u4EE4', content: '\u5BFC\u51FA' }),
+          _react2.default.createElement(_toolbarButton2.default, { handleClick: this.props.onCommand, group: '\u547D\u4EE4', content: '\u5BFC\u5165' }),
+          _react2.default.createElement(_toolbarButton2.default, { handleClick: this.props.onCommand, group: '\u547D\u4EE4', content: '\u52A0\u8F7D\u9ED8\u8BA4\u63A5\u7EBF' })
         )
       );
     }
@@ -49193,7 +49560,7 @@ Toolbar.propTypes = {
 
 exports.default = Toolbar;
 
-},{"./toolbar-radio-button":195,"prop-types":32,"react":188}],197:[function(require,module,exports){
+},{"./toolbar-button":197,"./toolbar-radio-button":198,"prop-types":32,"react":188}],200:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49201,12 +49568,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 var voltageLevelEnum = "330kV|750kV|110kV|35kV";
 
-var dataDef = {
+exports.default = {
   substation: [{
     propName: "name",
     propChName: "名称",
     propType: "string",
-    defaultValue: "厂站"
+    defaultValue: "变电站"
   }, {
     propName: "voltageLevel",
     propChName: "电压等级",
@@ -49233,28 +49600,28 @@ var dataDef = {
   }, {
     propName: "startSub",
     propChName: "始端厂站",
-    propType: "shape",
-    defaultValue: null
+    propType: "entityName",
+    defaultValue: ""
   }, {
     propName: "endSub",
     propChName: "末端厂站",
-    propType: "shape",
-    defaultValue: null
+    propType: "entityName",
+    defaultValue: ""
   }, {
     propName: "startbind",
     propChName: "始端共串线路",
-    propType: "shape",
-    defaultValue: null
+    propType: "entityName",
+    defaultValue: ""
   }, {
     propName: "endbind",
     propChName: "末端共串线路",
-    propType: "shape",
-    defaultValue: null
-  }, {
-    propName: "path",
-    propChName: "路径字符串",
-    propType: "text",
+    propType: "entityName",
     defaultValue: ""
+  }, {
+    propName: "pointList",
+    propChName: "路径",
+    propType: "Array[Point]",
+    defaultValue: []
   }],
   generation: [{
     propName: "name",
@@ -49272,12 +49639,28 @@ var dataDef = {
     propChName: "坐标",
     propType: "point",
     defaultValue: { x: 0, y: 0 }
+  }],
+  pointer: [{
+    propName: "name",
+    propChName: "名称",
+    propType: "string",
+    defaultValue: "pointer"
+  }, {
+    propName: "voltageLevel",
+    propChName: "电压等级",
+    propType: "enum",
+    defaultValue: "330kV",
+    valEnum: voltageLevelEnum
+  }, {
+    propName: "location",
+    propChName: "坐标",
+    propType: "point",
+    defaultValue: { x: 0, y: 0 }
   }]
 };
+var defaultData = exports.defaultData = { "substation": [{ "name": "咸林变", "voltageLevel": "330kV", "location": { "x": 178.66554192701975, "y": 44.458204785982765 } }, { "name": "上苑变", "voltageLevel": "330kV", "location": { "x": 98.82999980449677, "y": 24.06834129492443 } }, { "name": "渭南变", "voltageLevel": "330kV", "location": { "x": 126.94383517901099, "y": -35.88487100601197 } }, { "name": "灵宝换流站", "voltageLevel": "330kV", "location": { "x": 342.2181399265925, "y": -1.9495332241058336 } }, { "name": "来化牵引变", "voltageLevel": "330kV", "location": { "x": 214.23733878135678, "y": -60.52907721201579 } }, { "name": "信义变", "voltageLevel": "750kV", "location": { "x": 178.88512114683783, "y": -9.928445061047874 } }], "powerline": [{ "name": "信来1线", "voltageLevel": "330kV", "startSub": "来化牵引变", "endSub": "信义变", "startbind": "", "endbind": "信渭1线", "pointList": [{ "x": 210.43288346131638, "y": -63.4632520278295 }, { "x": 176.41405699650446, "y": -18.626432677110035 }] }, { "name": "信来2线", "voltageLevel": "330kV", "startSub": "来化牵引变", "endSub": "信义变", "startbind": "", "endbind": "信灵1线", "pointList": [{ "x": 216.790634671847, "y": -59.17451337973277 }, { "x": 178.82578911383942, "y": -11.805173059304552 }] }, { "name": "信灵1线", "voltageLevel": "330kV", "startSub": "信义变", "endSub": "灵宝换流站", "startbind": "信来2线", "endbind": "", "pointList": [{ "x": 181.22351296742758, "y": -15.562434395154318 }, { "x": 343.6945098638535, "y": -7.63701991240183 }] }, { "name": "信灵2线", "voltageLevel": "330kV", "startSub": "信义变", "endSub": "灵宝换流站", "startbind": "信咸2线", "endbind": "", "pointList": [{ "x": 182.45507927735645, "y": -7.63701991240183 }, { "x": 345.4921772082647, "y": 0.8544956048329718 }] }, { "name": "信咸1线", "voltageLevel": "330kV", "startSub": "咸林变", "endSub": "信义变", "startbind": "", "endbind": "信上2线", "pointList": [{ "x": 175.2297699848811, "y": 49.17181201775869 }, { "x": 175.2297699848811, "y": -7.438291430473321 }] }, { "name": "信咸2线", "voltageLevel": "330kV", "startSub": "咸林变", "endSub": "信义变", "startbind": "", "endbind": "信灵2线", "pointList": [{ "x": 181.12414872646335, "y": 44.3275910615921 }, { "x": 181.79225981235507, "y": -12.792562643686935 }] }, { "name": "信上1线", "voltageLevel": "330kV", "startSub": "上苑变", "endSub": "信义变", "startbind": "", "endbind": "信渭2线", "pointList": [{ "x": 94.4113262097041, "y": 20.434663414955146 }, { "x": 174.79767310619354, "y": -14.663600722948711 }] }, { "name": "信上2线", "voltageLevel": "330kV", "startSub": "上苑变", "endSub": "信义变", "startbind": "", "endbind": "信咸1线", "pointList": [{ "x": 101.40326710542044, "y": 25.196840087572735 }, { "x": 178.95910882949826, "y": -8.769221981366476 }] }, { "name": "信渭2线", "voltageLevel": "330kV", "startSub": "渭南变", "endSub": "信义变", "startbind": "", "endbind": "信上1线", "pointList": [{ "x": 122.34900538126627, "y": -33.67766749858856 }, { "x": 174.99640158812204, "y": -5.93871680895487 }] }, { "name": "信渭1线", "voltageLevel": "330kV", "startSub": "渭南变", "endSub": "信义变", "startbind": "", "endbind": "信来1线", "pointList": [{ "x": 129.1422177950541, "y": -37.07427370548248 }, { "x": 178.95910882949826, "y": -13.298030257225042 }] }], "generation": [] };
 
-exports.default = dataDef;
-
-},{}],198:[function(require,module,exports){
+},{}],201:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -49310,7 +49693,7 @@ window._ = _lodash2.default;
 
 _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.getElementById('app'));
 
-},{"./app":189,"jquery":25,"lodash":26,"react":188,"react-dom":35}],199:[function(require,module,exports){
+},{"./app":189,"jquery":25,"lodash":26,"react":188,"react-dom":35}],202:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49329,9 +49712,13 @@ var _jquery = require("jquery");
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
-var _raphaelExtensions = require("./raphael-extensions");
+var _raphaelEntityExtensions = require("./raphael-entity-extensions");
 
-var _raphaelExtensions2 = _interopRequireDefault(_raphaelExtensions);
+var _raphaelEntityExtensions2 = _interopRequireDefault(_raphaelEntityExtensions);
+
+var _raphaelStageExtensions = require("./raphael-stage-extensions");
+
+var _raphaelStageExtensions2 = _interopRequireDefault(_raphaelStageExtensions);
 
 var _raphaelThemeDefault = require("./raphael-theme-default");
 
@@ -49346,44 +49733,42 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 window.Raphael = _raphael2.default;
 
 var stage, paper;
-
-(0, _raphaelExtensions2.default)(_raphael2.default);
+(0, _raphaelEntityExtensions2.default)(_raphael2.default);
 (0, _raphaelThemeDefault2.default)(_raphael2.default);
+(0, _raphaelStageExtensions2.default)(_raphael2.default);
 
 function raphaelInit() {
-  console.log('raphael init...');
   stage = document.getElementById('stage');
   window.stage = stage;
   paper = (0, _raphael2.default)('stage');
-  window.paper = paper;
+  paper.layers(['powerline', 'generation', 'substation', 'BBox', 'pseudo']);
+  _lodash2.default.forOwn(paper.layers, function (o) {
+    return o.update = function () {};
+  });
   paper.panable();
   paper.scalable();
   paper.resizable((0, _jquery2.default)('.middle')[0])();
   paper.selectable();
-  var psub = paper.substation({
-    name: "厂站1",
-    location: { x: 100, y: 100 }
-  });
-  var psub = paper.substation({
-    voltageLevel: "110kV"
-  });
-  psub.update({ voltageLevel: "35kV" });
-  window.psub = psub;
+  paper.paintPseudo();
+  paper.focusable();
+  paper.keyboard();
+  paper.paintOnClick();
+  paper.showMouseLocation();
+  paper.autoUpdate();
+  paper.showScale();
+  var sub = paper.substation({});
   paper.viewAll();
+  return paper;
 }
 
 exports.default = _lodash2.default.once(raphaelInit);
 
-},{"./data-definitions":197,"./raphael-extensions":200,"./raphael-theme-default":201,"jquery":25,"lodash":26,"raphael":34}],200:[function(require,module,exports){
+},{"./data-definitions":200,"./raphael-entity-extensions":203,"./raphael-stage-extensions":204,"./raphael-theme-default":205,"jquery":25,"lodash":26,"raphael":34}],203:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _raphael = require("raphael");
-
-var _raphael2 = _interopRequireDefault(_raphael);
 
 var _lodash = require("lodash");
 
@@ -49392,6 +49777,324 @@ var _lodash2 = _interopRequireDefault(_lodash);
 var _jquery = require("jquery");
 
 var _jquery2 = _interopRequireDefault(_jquery);
+
+var _dataDefinitions = require("./data-definitions");
+
+var _dataDefinitions2 = _interopRequireDefault(_dataDefinitions);
+
+var _jqueryMousewheel = require("jquery-mousewheel");
+
+var _jqueryMousewheel2 = _interopRequireDefault(_jqueryMousewheel);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function mount(Raphael) {
+  var listenOnceFlags = {};
+  Raphael.el.BBox = function (show) {
+    // element.BBox() 更新 element.BBox(true) 更新并显示
+    var el = this;
+    var paper = el.paper;
+    if (!el._box) {
+      el._box = el.paper.rect(0, 0, 0, 0).hide().insertBefore(paper.layers.BBox).attr({
+        fill: 'none',
+        stroke: "white",
+        'stroke-dasharray': '--',
+        'stroke-linecapstring': 'round'
+      });
+      el._box._target = el;
+      el._box.data('stroke-width', 1);
+      el._box.update = function () {
+        if (this.data('visible')) {
+          var BBox = this._target.getBBox();
+          var padding = 5 / this._target.paper.getScale();
+          this.attr({
+            x: BBox.x - padding, y: BBox.y - padding,
+            width: BBox.width + 2 * padding, height: BBox.height + 2 * padding,
+            'stroke-width': this.data('stroke-width') / this._target.paper.getScale()
+          });
+          this._target.showControlPoints();
+          this.show();
+        } else {
+          this._target.showControlPoints(false);
+          this.hide();
+        }
+      }.bind(el._box);
+    }
+    typeof show === "boolean" && el._box.data('visible', show);
+    el._box.update();
+  };
+  Raphael.el.showControlPoints = function (show) {
+    var el = this;
+    show = typeof show === "boolean" ? show : true;
+    if (el._cpoints && show) {
+      _lodash2.default.forEach(el._cpoints, function (p) {
+        p.show();
+      });
+    } else {
+      _lodash2.default.forEach(el._cpoints, function (p) {
+        return p.hide();
+      });
+    }
+  };
+  Raphael.el.selectable = function () {
+    var el = this;
+    var paper = el.paper;
+    paper.registerOnce(el.node, 'click', 'pd.entity.click.' + el.id, this);
+    paper.registerOnce(el.node, 'mouseout', 'pd.entity.mouseout.' + el.id, this);
+    paper.registerOnce(el.node, 'mouseover', 'pd.entity.mouseover.' + el.id, this);
+    if (!listenOnceFlags['selectable']) {
+      listenOnceFlags['selectable'] = true;
+      eve.on('pd.entity.click.*', function (e) {
+        if (!justDragged) {
+          if (this.paper.currentTool === 'select' || this.paper.currentTool === 'groupSelect') {
+            if (e.shiftKey) {
+              this.select(true);
+            } else {
+              this.select();
+            }
+          } else if (this.paper.currentTool === 'fault') {
+            eve('pd.entity.noselect.' + this.id, this);
+          }
+        } else {
+          justDragged = false;
+        }
+        e.stopPropagation();
+      });
+      eve.on('pd.entity.mouseover.*', function () {
+        this.emphisis(true);
+      });
+      eve.on('pd.entity.mouseout.*', function () {
+        this.emphisis(false);
+      });
+      eve.on('pd.entity.update.*', function () {
+        this.BBox();
+      });
+      eve.on('pd.entity.select.*', function (multi) {
+        var el = this;
+        if (!multi) {
+          paper._selection.Clear();
+        }
+        paper._selection.Push(el);
+        (0, _jquery2.default)('#stage').focus();
+      });
+    }
+  };
+  Raphael.el.emphisis = function (on) {
+    var el = this;
+    el._originalwidth = el._originalwidth || el.data('stroke-width');
+    if (typeof on !== 'boolean' || on) {
+      el.data('stroke-width', el._originalwidth * 3);
+      el.update();
+    } else {
+      el.data('stroke-width', el._originalwidth);
+      el.update();
+    }
+  };
+  Raphael.el.select = function (multi) {
+    var el = this;
+    eve('pd.entity.select.' + el.id, el, multi);
+  };
+  var justDragged;
+  Raphael.el.draggable = function () {
+    var el = this;
+    var paper = el.paper;
+    el.drag(function (dx, dy, x, y, e) {
+      eve('pd.entity.dragmove.' + el.id, el, dx, dy, x, y, e);
+    }, function (x, y, e) {
+      eve('pd.entity.dragstart.' + el.id, el, x, y, e);
+    }, function (e) {
+      eve('pd.entity.dragend.' + el.id, el, e);
+    });
+    if (!listenOnceFlags['select']) {
+      listenOnceFlags['select'] = true;
+      var origin;
+      var dragging;
+      eve.on('pd.entity.dragstart.*', function (x, y, e) {
+        if (this.paper.currentTool === 'select' || this.paper.currentTool === 'pan') {
+          if (_lodash2.default.indexOf(paper._selection, this) < 0 && !paper.picking) {
+            if (e.shiftKey) {
+              this.select(true);
+            } else {
+              this.select();
+            }
+          }
+          dragging = true;
+          origin = [];
+          _lodash2.default.forEach(paper._selection, function (s) {
+            if (s.data('def') === 'powerline') {
+              origin.push({
+                shape: s,
+                start: _lodash2.default.cloneDeep(s.data('data').pointList)
+              });
+            } else {
+              origin.push({
+                shape: s,
+                start: _lodash2.default.clone(s.data('data').location)
+              });
+            }
+          });
+        }
+      });
+      eve.on('pd.entity.dragend.*', function (e) {
+        if ((this.paper.currentTool === 'select' || this.paper.currentTool === 'pan') && dragging) {}
+        dragging = false;
+      });
+      eve.on('pd.entity.dragmove.*', function (dx, dy, x, y, e) {
+        if ((this.paper.currentTool === 'select' || this.paper.currentTool === 'pan') && dragging) {
+          var scale = this.paper.getScale();
+          dx = dx / scale;
+          dy = dy / scale;
+          _lodash2.default.forEach(origin, function (o) {
+            if (o.shape.data('def') === 'powerline') {
+              _lodash2.default.forEach(o.shape.data('data').pointList, function (point, key) {
+                point.x = o.start[key].x + dx;
+                point.y = o.start[key].y + dy;
+                o.shape._cpoints[key].update();
+              });
+            } else {
+              o.shape.data('data').location.x = o.start.x + dx;
+              o.shape.data('data').location.y = o.start.y + dy;
+              o.shape.update();
+            }
+          });
+          if (dx > 10 || dy > 10) {
+            justDragged = true;
+          }
+        }
+      });
+    }
+  };
+  Raphael.el.alwaysFollow = function () {
+    var el = this;
+    var paper = el.paper;
+    (0, _jquery2.default)(el.node).css('pointer-events', 'none');
+    paper.registerOnce(paper.canvas, 'mousemove', 'pd.paper.mousemove', paper);
+    eve.on('pd.paper.mousemove', function (e) {
+      var axis = paper.getLocationByPage(e.pageX, e.pageY);
+      if (paper.currentTool === el.data('pseudo')) {
+        el.show();
+        el.data('data').location = { x: axis.x, y: axis.y };
+        el.update();
+      } else {
+        el.hide();
+      }
+    });
+  };
+  Raphael.el.accessory = function (shape) {
+    var el = this;
+    shape._target = el;
+    el._accessory = el._accessory || [];
+    el._accessory.push(shape);
+    eve.on('pd.entity.update.' + el.id, function () {
+      _lodash2.default.forEach(el._accessory, function (a) {
+        return a.update && a.update();
+      });
+    });
+  };
+  Raphael.fn.paintOnClick = function () {
+    var paper = this;
+    paper.registerOnce(paper.canvas, 'mousedown', 'pd.paper.mousedown', paper);
+    if (!listenOnceFlags['paintOnClick']) {
+      listenOnceFlags['paintOnClick'] = true;
+      eve.on('pd.paper.mousedown', function (e) {
+        var paper = this;
+        var axis = paper.getLocationByPage(e.pageX, e.pageY);
+        var axisX = axis.x;
+        var axisY = axis.y;
+        if (paper.currentTool === 'substation') {
+          window.s = paper.substation({ location: { x: axisX, y: axisY } });
+          s.select();
+          e.stopPropagation();
+        }
+        if (paper.currentTool === 'powerline') {
+          var overlap = paper.detectEntities(axisX, axisY, ['substation', 'generation'])[0];
+          if (!paper.currentLine) {
+            paper.currentLine = paper.powerline();
+            if (overlap) {
+              paper.currentLine.data('data').startSub = overlap.data('data').name;
+              paper.currentLine.data('data').voltageLevel = overlap.data('data').voltageLevel;
+            }
+            paper.currentLine.addPoint({ x: axisX, y: axisY });
+            paper.currentLine.select();
+          } else if (overlap) {
+            paper.currentLine.data('data').endSub = overlap.data('data').name;
+            paper.currentLine.addPoint({ x: axisX, y: axisY });
+            paper.currentLine.select();
+            paper.newLine();
+          } else {
+            paper.currentLine.addPoint({ x: axisX, y: axisY });
+            paper.currentLine.select();
+          }
+          e.stopPropagation();
+        }
+      });
+    }
+  };
+  Raphael.fn.newLine = function () {
+    this.currentLine = null;
+  };
+  Raphael.el.Remove = function () {
+    var el = this;
+    var paper = el.paper;
+    if (_lodash2.default.indexOf(paper.entities, el) >= 0) {
+      _lodash2.default.remove(paper.entities, function (e) {
+        return e === el;
+      });
+      el._box.remove();
+      if (el._cpoints) {
+        _lodash2.default.forEachRight(el._cpoints, function (p) {
+          return p.remove();
+        });
+      }
+      if (el._accessory) {
+        _lodash2.default.forEachRight(el._accessory, function (a) {
+          return a.remove();
+        });
+      }
+    }
+    el.remove();
+  };
+  Raphael.fn.layers = function (nameArray) {
+    var paper = this;
+    if (nameArray) {
+      paper._layers = _lodash2.default.map(nameArray, function (name) {
+        return paper.path().data('def', 'layer').data('layername', name);
+      });
+    } else {
+      return _lodash2.default.map(paper._layers, function (l) {
+        return l.data('layername');
+      });
+    }
+  };
+  Raphael.el.insertIntoLayer = function (layername) {
+    var layer = _lodash2.default.find(this.paper._layers, function (l) {
+      return l.data('layername') === layername;
+    });
+    this.insertBefore(layer);
+    return this;
+  };
+}
+
+exports.default = mount;
+
+},{"./data-definitions":200,"jquery":25,"jquery-mousewheel":24,"lodash":26}],204:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _lodash = require("lodash");
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _jquery = require("jquery");
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+var _dataDefinitions = require("./data-definitions");
+
+var _dataDefinitions2 = _interopRequireDefault(_dataDefinitions);
 
 var _jqueryMousewheel = require("jquery-mousewheel");
 
@@ -49419,7 +50122,7 @@ function mount(Raphael) {
       y: topShapeBBox.y,
       y2: topShapeBBox.y2
     };
-    this.entities.forEach(function (shape) {
+    this.forEach(function (shape) {
       var box = shape.getBBox();
       bound.x = bound.x > box.x ? box.x : bound.x;
       bound.x2 = bound.x2 < box.x2 ? box.x2 : bound.x2;
@@ -49431,76 +50134,107 @@ function mount(Raphael) {
     return bound;
   };
   Raphael.fn.getScale = function () {
-    // 使用 x 方向的缩放作为single source of truth
-    var paper = this;
-    var pvb = paper.getViewBox();
-    var scaleX = paper.width / pvb.w;
-    //var scaleY = paper.height/pvb.h;
-    //var scale = Math.min(scaleX, scaleY);
-    var scale = scaleX;
-    return scale;
+    return this.width / this.getViewBox().w;
+  };
+  Raphael.fn.focusable = function () {
+    this.registerOnce(this.canvas, 'mousedown', 'pd.paper.mousedown', this);
+    eve.on('pd.paper.mousedown', function (e) {
+      (0, _jquery2.default)(this.canvas).parent().focus();
+    });
+  };
+  Raphael.fn.showMouseLocation = function () {
+    this.registerOnce(this.canvas, 'mousemove', 'pd.paper.mousemove', this);
+    eve.on('pd.paper.mousemove', function (e) {
+      (0, _jquery2.default)(this.canvas).parent().focus();
+      var location = this.getLocationByPage(e.pageX, e.pageY);
+      execute && execute({
+        type: 'message',
+        info: '(' + location.x.toFixed(2) + ',' + location.y.toFixed(2) + ')'
+      });
+    });
+  };
+  Raphael.fn.showScale = function () {
+    eve.on('pd.paper.zoom', function (scale) {
+      execute && execute({
+        type: 'message',
+        info: 'scale: ' + scale
+      });
+    });
   };
   Raphael.fn.panable = function () {
-    var dragging = false;
     var paper = this;
+    this.registerOnce(this.canvas, 'mousedown', 'pd.paper.mousedown', this);
+    this.registerOnce(this.canvas, 'mouseup', 'pd.paper.mouseup', this);
+    this.registerOnce(this.canvas, 'mouseout', 'pd.paper.mouseout', this);
+    this.registerOnce(this.canvas, 'mousemove', 'pd.paper.mousemove', this);
+    var dragging = false;
     var previouslocation = {};
-    (0, _jquery2.default)(paper.canvas).on('mousedown', function (e) {
-      if (e.target == paper.canvas) {
-        dragging = true;
-        previouslocation.x = e.screenX;
-        previouslocation.y = e.screenY;
-      };
-    }).on('mouseup', function (e) {
-      if (dragging) {
+    eve.on('pd.paper.mousedown', function (e) {
+      if (paper.currentTool === 'pan') {
+        if (e.target === this.canvas) {
+          dragging = true;
+          previouslocation.x = e.pageX;
+          previouslocation.y = e.pageY;
+        };
+      }
+    });
+    eve.on('pd.paper.mouseup', function (e) {
+      if (paper.currentTool === 'pan') {
         dragging = false;
-      };
-    }).on('mouseout', function (e) {
-      if (dragging && !jQuery.contains(paper.canvas, e.toElement) && e.toElement.tagName !== 'path' && e.toElement.tagName !== 'svg') {
-        dragging = false;
-      };
-    }).on('mousemove', function (e) {
-      if (dragging) {
-        var deltaX = e.screenX - previouslocation.x;
-        var deltaY = e.screenY - previouslocation.y;
-        var pvb = paper.getViewBox();
-        var scale = paper.getScale();
-        paper.setViewBox(pvb.x - deltaX / scale, pvb.y - deltaY / scale, pvb.w, pvb.h);
-        previouslocation.x = e.screenX;
-        previouslocation.y = e.screenY;
-      };
+      }
+    });
+    eve.on('pd.paper.mouseout', function (e) {
+      if (paper.currentTool === 'pan') {
+        if (dragging && !(jQuery.contains(this.canvas, e.toElement) || this.canvas === e.toElement)) {
+          dragging = false;
+        };
+      }
+    });
+    eve.on('pd.paper.mousemove', function (e) {
+      if (paper.currentTool === 'pan') {
+        if (dragging) {
+          var deltaX = e.pageX - previouslocation.x;
+          var deltaY = e.pageY - previouslocation.y;
+          var pvb = this.getViewBox();
+          var scale = this.getScale();
+          this.setViewBox(pvb.x - deltaX / scale, pvb.y - deltaY / scale, pvb.w, pvb.h);
+          previouslocation.x = e.pageX;
+          previouslocation.y = e.pageY;
+        };
+        eve('pd.paper.pan', this, e);
+      }
     });
   };
   Raphael.fn.scalable = function () {
     var zoomFactor = 0.1,
-        minScale = 0.5;
-    (0, _jqueryMousewheel2.default)(_jquery2.default);
+        minScale = 0.5,
+        maxScale = 20;
     var paper = this;
-    var p = paper.canvas;
-    (0, _jquery2.default)(p).bind('mousewheel', _lodash2.default.throttle(function (e, delta) {
+    this.registerOnce(this.canvas, 'mousewheel', 'pd.paper.mousewheel', this);
+    eve.on('pd.paper.mousewheel', _lodash2.default.throttle(function (e, delta) {
       // delta: 向上 1, 向下 -1, https://github.com/jquery/jquery-mousewheel
       var vb = paper.getViewBox();
-      var mpl = (e.pageX - (0, _jquery2.default)(p).offset().left) / paper.width;
-      var mpt = (e.pageY - (0, _jquery2.default)(p).offset().top) / paper.height;
+      var mpl = (e.pageX - paper.canvas.getBoundingClientRect().left) / paper.width;
+      var mpt = (e.pageY - paper.canvas.getBoundingClientRect().top) / paper.height;
       delta = delta * zoomFactor;
-      var deltaX = delta * vb.w;
-      var deltaY = delta * vb.h;
-      if (vb.w - deltaX < paper.width / minScale && vb.h - deltaY < paper.height / minScale && vb.w - deltaX > 0 && vb.h - deltaY > 0) {
+      var deltaX = Math.max(delta * vb.w, -(paper.width / minScale - vb.w));
+      var deltaY = Math.max(delta * vb.h, -(paper.height / minScale - vb.h));
+      deltaX = Math.min(deltaX, -(paper.width / maxScale - vb.w));
+      deltaY = Math.min(deltaY, -(paper.height / maxScale - vb.h));
+      if (true) {
         var nvbx = vb.x + deltaX * mpl;
         var nvby = vb.y + deltaY * mpt;
         var nvbw = vb.w - deltaX;
         var nvbh = vb.h - deltaY;
         paper.setViewBox(nvbx, nvby, nvbw, nvbh);
       }
-      paper.forEach(function (el) {
-        var sw = el.data('stroke-width');
-        el.attr('stroke-width', sw / paper.getScale());
-      });
-      e.preventDefault();
+      eve('pd.paper.zoom', this, this.getScale());
     }));
   };
   Raphael.fn.resizable = function (mimicElement) {
     var paper = this;
-    (0, _jquery2.default)(window).resize(_lodash2.default.throttle(function () {
+    this.registerOnce(window, 'resize', 'pd.paper.resize', this);
+    eve.on('pd.paper.resize', _lodash2.default.throttle(function () {
       autoResize();
     }, 100));
     function autoResize() {
@@ -49511,6 +50245,7 @@ function mount(Raphael) {
       var mh = mimicElement.getBoundingClientRect().height;
       paper.setSize(mw, mh);
       paper.setViewBox(vb.x, vb.y, mw / scale, mh / scale);
+      eve('pd.paper.resize');
     }
     return autoResize;
   };
@@ -49527,32 +50262,114 @@ function mount(Raphael) {
       vbw = vbh * ratio;
     }
     paper.setViewBox(bound.x - defaultPadding, bound.y - defaultPadding, vbw, vbh);
-    paper.forEach(function (el) {
-      var sw = el.data('stroke-width');
-      el.attr('stroke-width', sw / paper.getScale());
+    eve('pd.paper.zoom', this, this.getScale());
+  };
+  Raphael.fn.autoUpdate = function () {
+    var paper = this;
+    eve.on('pd.paper.zoom', function (scale) {
+      _lodash2.default.forEach(paper.entities, function (el) {
+        if (el._cpoints) {
+          _lodash2.default.forEach(el._cpoints, function (p) {
+            return p.update();
+          });
+        } else {
+          el.update();
+        }
+      });
+      paper._selectShape.update();
     });
+  };
+  Raphael.fn.getLocationByPage = function (pageX, pageY) {
+    var scale = this.getScale();
+    var vb = this.getViewBox();
+    var surfaceX = pageX - this.canvas.getBoundingClientRect().left;
+    var surfaceY = pageY - this.canvas.getBoundingClientRect().top;
+    var axisX = surfaceX / scale + vb.x;
+    var axisY = surfaceY / scale + vb.y;
+    return { x: axisX, y: axisY };
+  };
+  Raphael.fn.keyboard = function () {
+    var paper = this;
+    this.registerOnce(document.getElementById('stage'), 'keydown', 'pd.paper.keyboard', this);
+    eve.on('pd.paper.keyboard', function (e) {
+      if (e.keyCode === 46) {
+        _lodash2.default.forEach(paper._selection, function (s) {
+          return s.Remove();
+        });
+        paper._selection.Clear();
+      }
+    });
+    (0, _jquery2.default)('#stage').keydown(function (e) {
+      eve('pd.paper.keyboard', paper, e);
+    });
+  };
+  Raphael.fn.export = function () {
+    var paper = this;
+    var out = {
+      substation: [],
+      powerline: [],
+      generation: []
+    };
+    _lodash2.default.forEach(paper.entities, function (el) {
+      var type = el.data('def');
+      var data = {};
+      data = _lodash2.default.fromPairs(_lodash2.default.map(_dataDefinitions2.default[type], function (prop) {
+        return [prop.propName, el.data('data')[prop.propName]];
+      }));
+      out[type].push(data);
+    });
+    return JSON.stringify(out);
+  };
+  Raphael.fn.detectEntities = function (x, y, def) {
+    var paper = this;
+    var result = [];
+    paper.forEachUpDown(function (shape) {
+      if (_lodash2.default.indexOf(paper.entities, shape) >= 0) {
+        var typeMatch;
+        def && (typeMatch = _lodash2.default.indexOf(def, shape.data('def')) >= 0);
+        def || (typeMatch = true);
+        if (typeMatch) {
+          var box = shape.getBBox();
+          if (x - box.x >= 0 && x - box.x <= box.width && y - box.y >= 0 && y - box.y <= box.height) {
+            result.push(shape);
+          }
+        }
+      }
+    });
+    return result;
   };
   Raphael.fn.selectable = function () {
     var paper = this;
     paper._selection = [];
     paper.entities = [];
     paper._selection.Push = function (el) {
-      paper._selection.push(el);
-      updateBBox();
+      if (!paper._picking) {
+
+        paper._selection.push(el);
+        eve('pd.paper.selectionChange');
+        updateBBox();
+      } else {
+        var pick = el;
+        eve('pd.paper.pick', pick);
+      }
     };
     paper._selection.Pull = function (el) {
       _lodash2.default.remove(paper._selection, function (item) {
         return item === el;
       });
+      eve('pd.paper.selectionChange');
       updateBBox();
     };
     paper._selection.Clear = function () {
       _lodash2.default.remove(paper._selection, function () {
         return true;
       });
+      if (!paper._picking) {
+        eve('pd.paper.selectionChange');
+      }
       updateBBox();
     };
-    function updateBBox() {
+    var updateBBox = function updateBBox() {
       paper.entities.forEach(function (el) {
         if (_lodash2.default.indexOf(paper._selection, el) >= 0) {
           el.BBox(true);
@@ -49560,24 +50377,151 @@ function mount(Raphael) {
           el.BBox(false);
         }
       });
-    }
-    eve.on('entity.click.*', function (e) {
-      var el = this;
-      paper._selection.Clear(el);
-      paper._selection.Push(el);
-      window.execute({ 'type': 'show-panel' });
-      window.execute({
-        type: "change-propertyPanelData",
-        info: {
-          def: el.data('def'),
-          val: el.data('data'),
-          target: el
-        }
-      });
+    };
+    eve.on('pd.paper.selectionChange', function () {
+      if (paper._selection.length !== 1) {
+        execute && execute({
+          type: "change-propertyPanelData",
+          info: {
+            def: "none",
+            val: {},
+            target: null
+          }
+        });
+      } else if (paper._selection.length === 1) {
+        execute && execute({ 'type': 'show-panel' });
+        execute && execute({
+          type: "change-propertyPanelData",
+          info: {
+            def: paper._selection[0].data('def'),
+            val: paper._selection[0].data('data'),
+            target: paper._selection[0]
+          }
+        });
+      }
     });
+    paper.registerOnce(paper.canvas, 'click', 'pd.paper.click');
+    eve.on('pd.paper.click', function (e) {
+      if (!justDragged) {
+        if (paper.currentTool === 'select') {
+          paper._selection.Clear();
+        }
+      } else {
+        justDragged = false;
+      }
+    });
+    //======================= group selection===================
+    this.registerOnce(this.canvas, 'mousedown', 'pd.paper.mousedown', this);
+    this.registerOnce(this.canvas, 'mouseup', 'pd.paper.mouseup', this);
+    this.registerOnce(this.canvas, 'mouseout', 'pd.paper.mouseout', this);
+    this.registerOnce(this.canvas, 'mousemove', 'pd.paper.mousemove', this);
+    var dragging = false;
+    var origin = {};
+    var justDragged;
+    paper._selectShape = paper.rect().attr({
+      'stroke': 'white',
+      'stroke-dasharray': '--'
+    });
+    paper._selectShape.update = function () {
+      paper._selectShape.attr({ 'stroke-width': 1 / paper.getScale() });
+    };
+    // 防止鼠标变成编辑符号
+    eve.on('pd.paper.mousedown', function (e) {
+      e.preventDefault();
+    });
+    eve.on('pd.paper.mousedown', function (e) {
+      if (paper.currentTool === 'select') {
+        if (e.target === this.canvas) {
+          dragging = true;
+          origin = paper.getLocationByPage(e.pageX, e.pageY);
+          paper._selectShape.show();
+        };
+      }
+    });
+    eve.on('pd.paper.mouseup', function (e) {
+      if (paper.currentTool === 'select') {
+        dragging = false;
+        paper._selectShape.attr({ x: 0, y: 0, width: 0, height: 0 });
+        paper._selectShape.hide();
+      }
+    });
+    eve.on('pd.paper.mouseout', function (e) {
+      if (paper.currentTool === 'select') {
+        if (dragging && !(jQuery.contains(this.canvas, e.toElement) || this.canvas === e.toElement)) {
+          dragging = false;
+          paper._selectShape.attr({ x: 0, y: 0, width: 0, height: 0 });
+          paper._selectShape.hide();
+        };
+      }
+    });
+    eve.on('pd.paper.mousemove', _lodash2.default.throttle(function (e) {
+      if (paper.currentTool === 'select') {
+        if (dragging) {
+          var end = paper.getLocationByPage(e.pageX, e.pageY);
+          var originX = Math.min(origin.x, end.x);
+          var originY = Math.min(origin.y, end.y);
+          var width = Math.abs(end.x - origin.x);
+          var height = Math.abs(end.y - origin.y);
+          var originX2 = originX + width;
+          var originY2 = originY + height;
+          paper._selectShape.attr({ x: originX, y: originY, width: width, height: height });
+          paper._selection.Clear();
+          _lodash2.default.forEach(paper.entities, function (s) {
+            var box = s.getBBox();
+            var f1 = originX2 > box.x && originX < box.x2;
+            var f2 = originY2 > box.y && originY < box.y2;
+            if (f1 && f2) {
+              paper._selection.Push(s);
+            } else {
+              paper._selection.Pull(s);
+            }
+          });
+          if (width > 10 || height > 10) {
+            justDragged = true;
+          }
+        };
+      }
+    }, 100));
+  };
+
+  //=========================helpers============================
+  var nameResolverRunning = false;
+  Raphael.fn.nameResolverAsync = function (data, element) {
+    var paper = this;
+    var defer = _jquery2.default.Deferred();
+    if (paper.entities.length < 1 || _lodash2.default.indexOf(paper.entities, element) === -1) {
+      defer.resolve();
+      return defer;
+    };
+    function resolve() {
+      var dup = true;
+      while (dup) {
+        _lodash2.default.forEach(paper.entities, function (el) {
+          if (element !== el && el.data('data').name === data.name) {
+            data.name = data.name + "_1";
+            dup = true;
+            return false;
+          }
+          dup = false;
+        });
+      }
+      defer.resolve();
+    }
+    function wait() {
+      if (nameResolverRunning) {
+        window.setTimeout(wait);
+      } else {
+        nameResolverRunning = true;
+        resolve();
+        nameResolverRunning = false;
+      }
+    }
+    wait();
+    return defer;
   };
   Raphael.fn.nameResolver = function (data, element) {
-    if (paper.entities.length < 1) {
+    var paper = this;
+    if (paper.entities.length < 1 || _lodash2.default.indexOf(paper.entities, element) === -1) {
       return;
     };
     var dup = true;
@@ -49592,11 +50536,153 @@ function mount(Raphael) {
       });
     }
   };
+  Raphael.fn.psPolyline = function (pointList) {
+    var paper = this;
+    var result = "";
+    if (pointList.length === 1) {
+      result += paper.psCircle(pointList[0].x, pointList[0].y, 1) + 'Z';
+    } else {
+      _lodash2.default.forEach(pointList, function (point, index) {
+        if (index === 0) {
+          result += "M";
+        } else {
+          result += "L";
+        }
+        result += point.x + ',' + point.y;
+      });
+    }
+    return result;
+  };
+  Raphael.fn.psCircle = function (x, y, r) {
+    // 近似圆形，详见：stackoverflow how to create circle with bezier curves
+    var cr = 0.5523 * r;
+    return 'M' + x + ',' + y + 'm' + r + ',' + '0' + 'c' + '0' + ',' + -cr + ',' + (cr - r) + ',' + -r + ',' + -r + ',' + -r + 'c' + -cr + ',' + '0' + ',' + -r + ',' + (r - cr) + ',' + -r + ',' + r + 'c' + '0' + ',' + cr + ',' + (r - cr) + ',' + r + ',' + r + ',' + r + 'c' + cr + ',' + '0' + ',' + r + ',' + (cr - r) + ',' + r + ',' + -r;
+  };
+  Raphael.fn.psRect = function (x, y, l) {
+    return 'M' + x + ',' + y + 'm' + l / 2 + ',' + -l / 2 + 'l' + -l + ',' + 0 + ',' + 'l' + 0 + ',' + l + ',' + 'l' + l + ',' + 0 + ',' + 'l' + 0 + ',' + -l;
+  };
+  Raphael.fn.forEachUpDown = function (callback, thisArg) {
+    var top = this.top;
+    while (top) {
+      if (callback.call(thisArg, top) === false) {
+        return this;
+      }
+      top = top.prev;
+    }
+    return this;
+  };
+  Raphael.fn.registerOnce = function (element, eventType, eventName, scope) {
+    (0, _jquery2.default)(element).data('events') || (0, _jquery2.default)(element).data('events', {});
+    var events = (0, _jquery2.default)(element).data('events');
+    if (_lodash2.default.get(events, eventType + '.' + eventName, false) === true) {
+      console.log('duplicated event register detected: ' + eventName);
+      return;
+    } else {
+      _lodash2.default.set(events, eventType + '.' + eventName, true);
+      eventType === 'mousewheel' && (0, _jqueryMousewheel2.default)(_jquery2.default);
+      (0, _jquery2.default)(element).on(eventType, function () {
+        _lodash2.default.spread(eve, 2)(eventName, scope, arguments);
+      });
+    }
+  };
+  Raphael.fn.pickEntity = function (callback) {
+    var paper = this;
+    paper._picking = true;
+    paper._selection.Clear();
+    eve.on('pd.paper.pick', pick);
+    function pick() {
+      callback(this);
+      window.setTimeout(function () {
+        paper._picking = false;
+      }, 1000);
+      eve.off('pd.paper.pick', pick);
+    }
+  };
+  Raphael.fn.import = function (data) {
+    var paper = this;
+    while (paper.entities.length > 0) {
+      paper.entities[0].Remove();
+    }
+    _lodash2.default.forEach(data.substation, function (data) {
+      paper.substation(data);
+    });
+    _lodash2.default.forEach(data.powerline, function (data) {
+      paper.powerline(data);
+    });
+    _lodash2.default.forEach(data.generation, function (data) {
+      paper.generation(data);
+    });
+  };
+  var listenOnceFlags = {};
+  Raphael.fn.fault = function () {
+    var paper = this;
+    if (!listenOnceFlags['fault']) {
+      listenOnceFlags['fault'] = true;
+      eve.on('pd.entity.noselect.*', function () {
+        if (paper.currentTool === 'fault') {
+          var el = this;
+          if (el.data('def') === 'substation') {
+            var linesToRemove = [];
+            var subName = el.data('data').name;
+            console.log('移除 ' + subName);
+            _lodash2.default.forEach(paper.entities, function (e) {
+              if (e && e.data('def') === 'powerline' && _lodash2.default.indexOf(linesToRemove, e) < 0) {
+                var data = e.data('data');
+                var bind;
+                if (data.startSub === subName) {
+                  if (bind = paper.getEntityByName(data.startbind)) {
+                    var binddata = bind.data('data');
+                    var nldata = {};
+                    nldata.name = data.name + "_" + binddata.name;
+                    nldata.voltageLevel = data.voltageLevel;
+                    nldata.startSub = data.endSub;
+                    nldata.endSub = binddata.startSub === subName ? binddata.endSub : binddata.startSub;
+                    nldata.startbind = data.endbind;
+                    nldata.endbind = binddata.startSub === subName ? binddata.endbind : binddata.startbind;
+                    nldata.pointList = [_lodash2.default.clone(_lodash2.default.nth(data.pointList, -1)), _lodash2.default.clone(_lodash2.default.nth(binddata.pointList, binddata.startSub === subName ? -1 : 0))];
+                    linesToRemove.push(e);
+                    linesToRemove.push(bind);
+                    paper.powerline(nldata);
+                  }
+                }
+                if (e.data('data').endSub === subName) {
+                  if (bind = paper.getEntityByName(data.endbind)) {
+                    var binddata = bind.data('data');
+                    var nldata = {};
+                    nldata.name = data.name + "_" + binddata.name;
+                    nldata.voltageLevel = data.voltageLevel;
+                    nldata.startSub = data.startSub;
+                    nldata.endSub = binddata.startSub === subName ? binddata.endSub : binddata.startSub;
+                    nldata.startbind = data.startbind;
+                    nldata.endbind = binddata.startSub === subName ? binddata.endbind : binddata.startbind;
+                    nldata.pointList = [_lodash2.default.clone(_lodash2.default.nth(data.pointList, 0)), _lodash2.default.clone(_lodash2.default.nth(binddata.pointList, binddata.startSub === subName ? -1 : 0))];
+                    linesToRemove.push(e);
+                    linesToRemove.push(bind);
+                    paper.powerline(nldata);
+                  }
+                }
+              }
+            });
+            _lodash2.default.forEach(linesToRemove, function (l) {
+              return l.Remove();
+            });
+            el.Remove();
+          }
+        }
+      });
+    }
+  };
+  Raphael.fn.getEntityByName = function (name) {
+    var paper = this;
+    return _lodash2.default.find(paper.entities, function (e) {
+      return e.data('data').name === name;
+    });
+  };
 }
 
 exports.default = mount;
 
-},{"jquery":25,"jquery-mousewheel":24,"lodash":26,"raphael":34}],201:[function(require,module,exports){
+},{"./data-definitions":200,"jquery":25,"jquery-mousewheel":24,"lodash":26}],205:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49621,117 +50707,238 @@ var _dataDefinitions2 = _interopRequireDefault(_dataDefinitions);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function psCircle(x, y, r) {
-  // 近似圆形，详见：stackoverflow how to create circle with bezier curves
-  var cr = 0.5523 * r;
-  return 'M' + x + ',' + y + 'm' + r + ',' + '0' + 'c' + '0' + ',' + -cr + ',' + (cr - r) + ',' + -r + ',' + -r + ',' + -r + 'c' + -cr + ',' + '0' + ',' + -r + ',' + (r - cr) + ',' + -r + ',' + r + 'c' + '0' + ',' + cr + ',' + (r - cr) + ',' + r + ',' + r + ',' + r + 'c' + cr + ',' + '0' + ',' + r + ',' + (cr - r) + ',' + r + ',' + -r;
-}
-
 function mount(Raphael) {
-  /*
-  function shapeMouseoverHandler(){
-    if(_.hasIn(this, 'shapeGlow')){
-      this.shapeGlow.remove();
-    }
-    this.shapeGlow = this.glow({color:'white', width:3, opacity:0.3});
-  }
-  function shapeMouseoutHandler(){
-    if(_.hasIn(this, 'shapeGlow')){
-      this.shapeGlow.remove();
-    }
-  }
-  Raphael.el.mouseoverGlow = function(remove){
-    var el = this;
-    if(remove){
-      if(_.hasIn(el, 'shapeGlow')){
-        el.shapeGlow.remove();
-        el.unmouseover(shapeGlowMouseoverHandler.bind(el)).unmouseout(shapeGlowMouseoutHandler.bind(el));
-      }
-    }else{
-      el.mouseover(shapeGlowMouseoverHandler.bind(el)).mouseout(shapeGlowMouseoutHandler.bind(el));
-    }
-  }*/
-
-  Raphael.el.BBox = function (show) {
-    var el = this;
-    el._box = el._box || el.paper.rect(0, 0, 0, 0).hide().attr({
-      fill: 'none',
-      stroke: "white",
-      'stroke-dasharray': '--',
-      'stroke-linecapstring': 'round',
-      'stroke-width': 1 / el.paper.getScale()
-    });
-    el._box.data('stroke-width', 2);
-    if (show) {
-      eve.on('raphael.attr.path.' + el.id, updateBBox);
-      updateBBox();
-      el._box.show();
-    } else {
-      eve.off('raphael.attr.path.' + el.id, updateBBox);
-      el._box.hide();
-    }
-    function updateBBox() {
-      var BBox = el.getBBox();
-      el._box.attr({ x: BBox.x, y: BBox.y, width: BBox.width, height: BBox.height });
-    }
-  };
-
-  Raphael.el.selectable = function () {
-    var el = this;
-    el.click(function () {
-      eve('entity.click.' + el.id, el);
-    });
-  };
-
-  Raphael.el.draggable = function () {
-    var el = this;
-    var origin;
-    el.drag(function (dx, dy, x, y) {
-      var scale = paper.getScale();
-      x = origin.x + dx / scale;
-      y = origin.y + dy / scale;
-      el.update({ location: { x: x, y: y } });
-    }, function () {
-      origin = el.data('data').location;
-    }, function () {});
-  };
-
-  Raphael.fn.substation = function (data) {
+  var color = { '330kV': '#ff5555', '750kV': '#ffff55', '110kV': '#55ffff', '35kV': '#55ff55' };
+  Raphael.fn.paintPseudo = function () {
     var paper = this;
-    var radius = 10;
-    var psub = paper.path();
-    var defaultValue = _lodash2.default.fromPairs(_lodash2.default.map(_dataDefinitions2.default['substation'], function (p) {
+    paper.pseudo = [];
+    paper.substation({}, true);
+    paper.powerline({}, true);
+  };
+  Raphael.fn.substation = function (data, pseudo) {
+    var paper = this;
+    var radius = 3;
+    var rings = { '330kV': 3, '750kV': 5, '110kV': 1, '35kV': 1 };
+    var shape = paper.path();
+    var defaultValue = _lodash2.default.cloneDeep(_lodash2.default.fromPairs(_lodash2.default.map(_dataDefinitions2.default['substation'], function (p) {
       return [p.propName, p.defaultValue];
-    }));
-    _lodash2.default.defaults(data, defaultValue);
-    psub.data('stroke-width', 3);
-    psub.data('def', 'substation');
-    psub.draggable();
-    psub.selectable();
-    psub.update = function (data) {
-      var data = _lodash2.default.defaults(data, psub.data('data'));
-      paper.nameResolver(data, psub);
-      var color = { '330kV': '#ff5555', '750kV': '#ffff55', '110kV': '#55ffff', '35kV': '#55ff55' };
-      var rings = { '330kV': 3, '750kV': 5, '110kV': 1, '35kV': 1 };
-      var path = "";
-      for (var i = 1; i <= _lodash2.default.get(rings, data.voltageLevel, rings['35kV']); i++) {
-        path += psCircle(data.location.x, data.location.y, radius * i);
-      }
-      this.attr({
-        'path': path,
-        'stroke': _lodash2.default.get(color, data.voltageLevel, color['35kV']),
-        'fill-opacity': 0.01,
-        'fill': 'black',
-        'stroke-width': psub.data('stroke-width') / paper.getScale()
+    })));
+    data = _lodash2.default.defaults(data, defaultValue);
+    shape.data('stroke-width', 1);
+    shape.data('data', data);
+    if (pseudo) {
+      paper.pseudo.push(shape);
+      shape.insertIntoLayer('pseudo');
+      shape.alwaysFollow();
+      shape.data('def', 'pointer').hide();
+      shape.data('pseudo', 'substation');
+    } else {
+      paper.entities.push(shape);
+      shape.insertIntoLayer('substation');
+      shape.draggable();
+      shape.selectable();
+      shape.data('def', 'substation');
+      var text = paper.text(0, 0, "").attr({
+        'stroke': 'none',
+        'font-size': 5,
+        'fill': 'white'
       });
-      psub.data('data', data);
-    }.bind(psub);
-    psub.update(data);
-    paper.entities.push(psub);
-    return psub;
+      text.data('font-size', 20);
+      text.data('stroke-width', 1);
+      text.update = function () {
+        var data = shape.data('data');
+        var box = shape.getBBox();
+        text.attr({
+          'x': data.location.x,
+          'y': box.y2,
+          'text': data.name,
+          //'font-size' : text.data('font-size')/text.paper.getScale(),
+          'stroke-width': text.data('stroke-width') / text.paper.getScale()
+        });
+      };
+      shape.accessory(text);
+    }
+    var prevname = '';
+    shape.update = function () {
+      var data = shape.data('data');
+      if (data.name !== prevname) {
+        paper.nameResolver(data, shape);
+        prevname = data.name;
+      }
+      var path = "";
+      for (var i = 1; i <= _lodash2.default.get(rings, data.voltageLevel, rings[defaultValue.voltageLevel]); i++) {
+        path += paper.psCircle(data.location.x, data.location.y, radius * i);
+      }
+      shape.attr({
+        'path': path,
+        'stroke': _lodash2.default.get(color, data.voltageLevel, color[defaultValue.voltageLevel]),
+        'fill-opacity': 1,
+        'fill': 'black',
+        'stroke-width': shape.data('stroke-width') / paper.getScale()
+      });
+      eve('pd.entity.update.' + shape.id, shape);
+    };
+    shape.update();
+    return shape;
+  };
+
+  Raphael.fn.powerline = function (data, pseudo) {
+    var paper = this;
+    var shape = paper.path();
+    if (pseudo) {
+      paper.pseudo.push(shape);
+      shape.insertIntoLayer('pseudo');
+      shape.alwaysFollow();
+      shape.data('def', 'pointer').hide();
+      shape.data('pseudo', 'powerline');
+      shape.data('radius', 3);
+      shape.data('data', { location: {} });
+      shape.attr({
+        'stroke': 'none',
+        'fill': color['330kV']
+      });
+      shape.update = function () {
+        data = shape.data('data');
+        var scale = shape.paper.getScale();
+        var path = paper.psCircle(data.location.x, data.location.y, shape.data('radius') / scale) + 'Z';
+        shape.attr({ 'path': path });
+      };
+      shape.update();
+    } else {
+      var defaultValue = _lodash2.default.cloneDeep(_lodash2.default.fromPairs(_lodash2.default.map(_dataDefinitions2.default['powerline'], function (p) {
+        return [p.propName, p.defaultValue];
+      })));
+      data = _lodash2.default.defaults(data, defaultValue);
+      shape.data('stroke-width', 2);
+      shape.data('data', data);
+      shape.insertIntoLayer('powerline');
+      paper.entities.push(shape);
+      shape.draggable();
+      shape.selectable();
+      shape.data('def', 'powerline');
+
+      var text = paper.text(0, 0, "").attr({
+        'stroke': 'none',
+        'font-size': 5,
+        'fill': 'white'
+      });
+      text.data('font-size', 20);
+      text.data('stroke-width', 1);
+      var prevname = '';
+      text.update = function () {
+        var data = shape.data('data');
+        if (data.name !== prevname) {
+          paper.nameResolver(data, shape);
+          prevname = data.name;
+        }
+        var box = shape.getBBox();
+        text.attr({
+          'x': box.x + box.width / 2,
+          'y': box.y + box.height / 2,
+          'text': data.name,
+          //'font-size' : text.data('font-size')/text.paper.getScale(),
+          'stroke-width': text.data('stroke-width') / text.paper.getScale()
+        });
+      };
+      shape.accessory(text);
+
+      shape._cpoints = [];
+      shape.addPoint = function (point) {
+        shape.data('data').pointList.push(point);
+        var np = paper.pointHandle(point, shape);
+        shape._cpoints.push(np);
+      };
+      shape.removePoint = function (point) {
+        _lodash2.default.pull(shape.data('data').pointList, point);
+        _lodash2.default.pull(shape._cpoints, _lodash2.default.find(shape._cpoints, function (p) {
+          return p.data('data') === point;
+        }));
+      };
+
+      shape.update = function () {
+        var pointList = shape.data('data').pointList;
+        var path = paper.psPolyline(pointList);
+        shape.attr({
+          'path': path,
+          'stroke': color[shape.data('data').voltageLevel],
+          'stroke-width': shape.data('stroke-width') / paper.getScale()
+        });
+        eve('pd.entity.update.' + shape.id, shape);
+      };
+      _lodash2.default.forEach(data.pointList, function (point) {
+        var np = paper.pointHandle(point, shape);
+        shape._cpoints.push(np);
+      });
+      shape.update();
+    }
+    return shape;
+  };
+
+  Raphael.fn.pointHandle = function (data, target) {
+    var paper = this;
+    var shape = paper.path().insertIntoLayer('BBox');
+    shape.data('def', 'handler');
+    shape.data('stroke-width', 1);
+    shape.data('size', 10);
+    shape.data('data', data);
+    shape.attr({
+      'stroke': 'white',
+      'fill': '#aaaaaa'
+    });
+    shape._target = target;
+    var origin;
+    var dragging;
+    var startPoint;
+    var endPoint;
+    shape.drag(function (dx, dy, x, y, e) {
+      if (dragging) {
+        var scale = shape.paper.getScale();
+        var nx = origin.x + dx / scale;
+        var ny = origin.y + dy / scale;
+        var detect;
+        shape.data('data').x = nx;
+        shape.data('data').y = ny;
+        if (startPoint || endPoint) {
+          detect = shape.paper.detectEntities(nx, ny, ['substation', 'generation']);
+          if (detect.length > 0) {
+            _lodash2.default.forEach(shape.paper.entities, function (e) {
+              e.emphisis(e === detect[0]);
+            });
+            startPoint && (shape._target.data('data').startSub = detect[0].data('data').name);
+            endPoint && (shape._target.data('data').endSub = detect[0].data('data').name);
+          } else {
+            _lodash2.default.forEach(shape.paper.entities, function (e) {
+              e.emphisis(false);
+            });
+            startPoint && (shape._target.data('data').startSub = "");
+            endPoint && (shape._target.data('data').endSub = "");
+          }
+        }
+        shape.update();
+      }
+    }, function (x, y, e) {
+      origin = _lodash2.default.clone(shape.data('data'));
+      dragging = true;
+      var cpoints = shape._target._cpoints;
+      var index = _lodash2.default.indexOf(cpoints, shape);
+      startPoint = index === 0 ? true : false;
+      endPoint = !startPoint || index === cpoints.length - 1 ? true : false;
+    }, function (e) {
+      dragging = false;
+    });
+    shape.update = function () {
+      var path = paper.psRect(shape.data('data').x, shape.data('data').y, shape.data('size') / paper.getScale());
+      shape.attr({
+        'path': path,
+        'stroke-width': shape.data('stroke-width') / paper.getScale()
+      });
+      shape._target.update();
+    };
+    shape.update();
+    return shape;
   };
 }
 
 exports.default = mount;
 
-},{"./data-definitions":197,"jquery":25,"lodash":26,"raphael":34}]},{},[198]);
+},{"./data-definitions":200,"jquery":25,"lodash":26,"raphael":34}]},{},[201]);

@@ -7,6 +7,7 @@ $text-color: white;
 $property-panel-width: 300px;
 $property-panel-padding: 20px;
 $property-panel-close-width: 30px;
+$property-panel-content-width: $property-panel-width - 20px - 2*$property-panel-padding -20px;
 
 @mixin anchor-button($padding){
   background: $background-color;
@@ -29,6 +30,7 @@ $property-panel-close-width: 30px;
     background-color: darken($foreground-color, 20%);
     color: $background-color;
   }
+  cursor: pointer;
 }
 
 html{
@@ -56,6 +58,9 @@ html{
               .toolbar-radio-button {
                 @include anchor-button(10px);
               }
+              .toolbar-button {
+                @include anchor-button(10px);
+              }
             }
           }
         }
@@ -71,6 +76,9 @@ html{
             position: absolute;
             width: 0;
             height: 0;
+            &:focus{
+              border:none;
+            }
             svg{
             }
           }
@@ -111,6 +119,7 @@ html{
             height: 100%;
             overflow: auto;
             .padding{
+              width: $property-panel-width - 20px - 2*$property-panel-padding;
               padding: $property-panel-padding;
               .top{
                 .title{
@@ -129,7 +138,7 @@ html{
                     padding-bottom: 5px;
                   }
                   .location-x, .location-y{
-                    width: $property-panel-width/2-20px;
+                    width: $property-panel-content-width/2;
                     display: inline-block;
                     .label, input{
                       display: inline-block;
@@ -138,7 +147,7 @@ html{
                       width: 20px;
                     }
                     input{
-                      width: $property-panel-width/2-20px-30px;
+                      width: $property-panel-content-width/2 - 20px;
                       background-color: lighten($background-color,30%);
                       border: none;
                       color: white;
@@ -146,10 +155,51 @@ html{
                     }
                   }
                   .full{
-                    width: 100%;
+                    width: $property-panel-content-width;
+                  }
+                  .objectName{
+                  }
+                  .objectNameInput{
+                    width:$property-panel-content-width -50px;
+                  }
+                  .objectNameSelect{
+                    width:50px;
+                    @include anchor-button(0px);
                   }
                 }
               }
+            }
+          }
+        }
+        .portPanel {
+          position: absolute;
+          width : 80%;
+          height : 80%;
+          top: 10%;
+          left: 10%;
+          background-color: lighten($background-color, 30%);
+          display: table;
+          padding :10px;
+          &.hide{
+            display:none;
+          }
+          .port{
+            display:table-row;
+            height: 100%;
+            #port{
+              color: white;
+              width:100%;
+              height: 100%;
+              background-color: lighten($background-color, 40%);
+              border: 1px solid $foreground-color;
+            }
+          }
+          .portPanelControls {
+            display: table-row;
+            text-align: center;
+            a {
+              margin-top:5px;
+              @include anchor-button(5px);
             }
           }
         }

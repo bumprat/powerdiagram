@@ -4,6 +4,8 @@ import StatusBar from './components/status-bar';
 import _ from 'lodash';
 import raphaelInit from "./raphael-customize";
 import PropertyPanel from "./components/property-panel";
+import PortPanel from "./components/port-panel";
+import {defaultData} from './data-definitions';
 
 class App extends React.Component{
   constructor(props){
@@ -19,9 +21,13 @@ class App extends React.Component{
         val : {
         },
         target : null
-      }
+      },
+      portdata: "",
+      port: "import",
+      show: false
     }
     window.execute = this.execute = this.execute.bind(this);
+    this.paper = null;
   }
 
   execute(cmd){
@@ -32,6 +38,29 @@ class App extends React.Component{
         currentTool : ct
       });
       this.setState({message:"选择工具:【"+cmd.info.group+"】"+cmd.info.toolName});
+      _.forEach(this.paper.pseudo, (o)=>o.hide());
+
+      if(cmd.info.group === '绘制' && cmd.info.toolName==='选择'){
+        this.paper.currentTool = 'select';
+        this.paper.newLine();
+      }
+      if(cmd.info.group === '绘制' && cmd.info.toolName==='变电站'){
+        this.paper.currentTool = 'substation';
+        this.paper.newLine();
+      }
+      if(cmd.info.group === '绘制' && cmd.info.toolName==='输电线'){
+        this.paper.currentTool = 'powerline';
+        this.paper.newLine();
+      }
+      if(cmd.info.group === '绘制' && cmd.info.toolName==='平移'){
+        this.paper.currentTool = 'pan';
+        this.paper.newLine();
+      }
+      if(cmd.info.group === '绘制' && cmd.info.toolName==='故障'){
+        this.paper.currentTool = 'fault';
+        this.paper.fault();
+        this.paper.newLine();
+      }
       return;
     }else if(cmd.type === 'hide-panel'){
       this.setState({showPanel : false});
@@ -46,8 +75,47 @@ class App extends React.Component{
       this.setState({propertyPanelData : cmd.info});
       this.setState({message:"更改对象属性"});
       return;
+    }else if(cmd.type === 'button-click' ){
+      if( cmd.info.toolName === "导出"){
+        this.setState({
+          showPort:true,
+          portdata : this.paper.export(),
+          port:"export"
+        });
+        return;
+      }else if(cmd.info.toolName === "导入"){
+        this.setState({
+          showPort:true,
+          port:"import"
+        });
+      }else if(cmd.info.toolName === "加载默认接线"){
+        this.setState({showPort:false});
+        this.paper.import(defaultData);
+        this.paper.viewAll();
+        return;
+      }
+    }else if(cmd.type === 'import-from-portPanel'){
+      this.setState({showPort:false});
+      this.paper.import($.parseJSON(this.state.portdata));
+      this.paper.viewAll();
+      return;
+    }else if(cmd.type === 'hide-portPanel'){
+      this.setState({showPort:false});
+      return;
+    }else if(cmd.type === 'import-text-change'){
+      this.setState({portdata:cmd.info});
+      return;
+    }else if(cmd.type === 'message'){
+      this.setState({message:cmd.info});
+      return;
+    }else if(cmd.type === 'pick'){
+      this.paper.pickEntity(cmd.info);
+      this.execute({type:'radio-button-click', info:{
+        group:"绘制",
+        toolName:"选择"
+      }});
+      return;
     }
-    this.setState({message:cmd.type});
   }
 
   render(){
@@ -57,7 +125,7 @@ class App extends React.Component{
           <Toolbar currentTool={this.state.currentTool} onCommand={this.execute}/>
         </div>
         <div className="middle">
-          <div id="stage">
+          <div id="stage" tabIndex="0">
           </div>
           <div id="sizeTracker"></div>
         </div>
@@ -66,12 +134,15 @@ class App extends React.Component{
         </div>
         <PropertyPanel onCommand={this.execute} show={this.state.showPanel}
           data={this.state.propertyPanelData}/>
+        <PortPanel data={this.state.portdata} onCommand={this.execute} type={this.state.port} show={this.state.showPort}/>
       </div>
     );
   }
 
   componentDidMount(){
-    raphaelInit();
+    var paper = raphaelInit();
+    paper.currentTool = 'select';
+    window.devpaper = this.paper = paper;
   }
 }
 

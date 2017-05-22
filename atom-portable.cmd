@@ -1,2 +1,1 @@
-echo off
-..\..\..\atom-portable\atom.exe
+start ..\..\..\atom-portable\atom.exe

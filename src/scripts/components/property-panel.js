@@ -5,6 +5,7 @@ import dataDef from '../data-definitions';
 import PropertyPanelPoint from './property-panel-point';
 import PropertyPanelCombo from './property-panel-combo';
 import PropertyPanelText from './property-panel-text';
+import PropertyPanelObjectName from './property-panel-objectName'
 
 class PropertyPanel extends React.Component{
 
@@ -14,6 +15,7 @@ class PropertyPanel extends React.Component{
     this.showPanel = this.showPanel.bind(this);
     this.togglePanel = this.togglePanel.bind(this);
     this.changeData = this.changeData.bind(this);
+    this.pick = this.pick.bind(this);
     this.state={
       show: false
     };
@@ -32,12 +34,28 @@ class PropertyPanel extends React.Component{
   togglePanel(){
     this.props.onCommand({type: 'toggle-panel'});
   }
-
+  pick(propName){
+    var self = this;
+    var el = self.props.data.target;
+    this.props.onCommand({type: 'pick', info: function(shape){
+      var data = el.data('data');
+      _.set(data, propName, shape.data('data').name);
+      el.update();
+      window.execute({
+        type: "change-propertyPanelData",
+        info: {
+          def: el.data('def'),
+          val: el.data('data'),
+          target: el
+        }
+      })
+    }});
+  }
   changeData(path, value){
     var el = this.props.data.target;
     var data = el.data('data');
     _.set(data, path, value);
-    el.update(data);
+    el.update();
     window.execute({
       type: "change-propertyPanelData",
       info: {
@@ -52,6 +70,9 @@ class PropertyPanel extends React.Component{
   render(){
     var propertyItems=[];
     var self = this;
+    var typeName = dataDef[this.props.data.def] ?
+      _.filter(dataDef[this.props.data.def],
+        {propName:"name"})[0].defaultValue : "";
     _.forOwn(this.props.data.val, function(value, key){
       var def = _.get(_.filter(dataDef[self.props.data.def],
         _.iteratee({propName: key})),'[0]',{});
@@ -89,6 +110,17 @@ class PropertyPanel extends React.Component{
           sortOrder: sortOrder
           }
         );
+      }else if(def.propType === 'entityName'){
+        propertyItems.push({
+          item:(
+          <div className="propertyItem" key={key} >
+            <div className='propertyLabel'>{def.propChName}</div>
+            <PropertyPanelObjectName data={value} def={def} onPick={self.pick}
+            onChangeData={self.changeData} />
+          </div>),
+          sortOrder: sortOrder
+          }
+        );
       }
     });
     propertyItems = _.map(_.sortBy(propertyItems, _.iteratee('sortOrder')), (o)=>o.item);
@@ -98,7 +130,7 @@ class PropertyPanel extends React.Component{
         <div className="scroll">
           <div className="padding">
             <div className="top">
-              <div className="title">{this.props.data.val.name}</div>
+              <div className="title">{typeName}</div>
             </div>
             <div className="middle">
               {propertyItems}
