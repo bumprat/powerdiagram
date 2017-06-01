@@ -48426,6 +48426,16 @@ arguments[4][161][0].apply(exports,arguments)
 module.exports = require('./lib/React');
 
 },{"./lib/React":164}],189:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var xinyiData = { "substation": [{ "name": "咸林", "voltageLevel": "330kV", "location": { "x": 238.32325261938087, "y": 45.97235987969752 } }, { "name": "渭南", "voltageLevel": "330kV", "location": { "x": 68.94588059291951, "y": -2.60792765508862 } }, { "name": "灵宝", "voltageLevel": "330kV", "location": { "x": 415.862708704987, "y": -16.093192128565704 } }, { "name": "来化牵", "voltageLevel": "330kV", "location": { "x": 282.67334757618687, "y": -61.87142581149246 } }, { "name": "信义", "voltageLevel": "750kV", "location": { "x": 178.39740877082198, "y": -11.391582189095445 } }, { "name": "韩城二厂3、4号机", "voltageLevel": "330kV", "location": { "x": 166.26816289096465, "y": -155.42401414807003 } }, { "name": "韩城二厂#1、2机", "voltageLevel": "330kV", "location": { "x": 106.66289132648015, "y": -155.52352677763244 } }, { "name": "桢州", "voltageLevel": "330kV", "location": { "x": 214.18650732828812, "y": -144.20662949970531 } }, { "name": "东郊", "voltageLevel": "330kV", "location": { "x": 49.670815079148625, "y": 60.55248725567725 } }, { "name": "代王", "voltageLevel": "330kV", "location": { "x": 100.58434052581838, "y": 51.60375965782957 } }, { "name": "上苑", "voltageLevel": "330kV", "location": { "x": 87.1898312795876, "y": 112.8236632651628 } }, { "name": "秦岭二厂", "voltageLevel": "330kV", "location": { "x": 392.4980227805039, "y": 89.70754068714363 } }, { "name": "鹤城", "voltageLevel": "330kV", "location": { "x": 223.51270106374741, "y": 128.62296498324275 } }, { "name": "张村", "voltageLevel": "330kV", "location": { "x": 293.7694974121118, "y": 146.48999508907679 } }, { "name": "罗敷", "voltageLevel": "330kV", "location": { "x": 325.92762706121675, "y": 91.85918527861566 } }, { "name": "鹿城", "voltageLevel": "330kV", "location": { "x": 338.1713889338439, "y": 195.59053075068675 } }, { "name": "赵家坪牵", "voltageLevel": "330kV", "location": { "x": 304.03152261273385, "y": 47.8136808178819 } }, { "name": "秦岭330", "voltageLevel": "330kV", "location": { "x": 358.65530872650993, "y": 25.378911521152418 } }, { "name": "秦岭750", "voltageLevel": "750kV", "location": { "x": 276.23191717982996, "y": 19.526363008962168 } }, { "name": "西庄", "voltageLevel": "330kV", "location": { "x": 44.56853857229757, "y": -146.78355721244532 } }, { "name": "高明", "voltageLevel": "330kV", "location": { "x": 49.44566233245612, "y": -79.96696169827283 } }, { "name": "太奇里", "voltageLevel": "330kV", "location": { "x": -7.6166856613992024, "y": -77.04068744217767 } }, { "name": "洛川", "voltageLevel": "750kV", "location": { "x": 175.76316772056327, "y": -221.40355074287154 } }, { "name": "乾县", "voltageLevel": "750kV", "location": { "x": -97.35576284831703, "y": -29.244874592623628 } }, { "name": "南山", "voltageLevel": "750kV", "location": { "x": -47.60910049469953, "y": 207.29562777506737 } }], "powerline": [{ "name": "北渭1", "voltageLevel": "330kV", "startSub": "", "endSub": "渭南", "startbind": "", "endbind": "", "pointList": [{ "x": -12.049762331800004, "y": 3.508735237255399 }, { "x": 64.50290615795625, "y": -7.044170694510161 }] }, { "name": "北渭2", "voltageLevel": "330kV", "startSub": "", "endSub": "渭南", "startbind": "", "endbind": "", "pointList": [{ "x": -12.932361403070736, "y": 11.41620958623997 }, { "x": 66.53835718379082, "y": -0.47033295872637204 }] }, { "name": "信渭1", "voltageLevel": "330kV", "startSub": "渭南", "endSub": "信义", "startbind": "", "endbind": "信来1", "pointList": [{ "x": 69.92958212512218, "y": -7.297817671910032 }, { "x": 178.20172960064252, "y": -14.6135033121479 }] }, { "name": "信渭2", "voltageLevel": "330kV", "startSub": "渭南", "endSub": "信义", "startbind": "", "endbind": "信禹2", "pointList": [{ "x": 72.36814400520146, "y": -2.4206939117514494 }, { "x": 173.81231821649982, "y": -9.248667175973456 }] }, { "name": "信上1", "voltageLevel": "330kV", "startSub": "上苑", "endSub": "信义", "startbind": "", "endbind": "信咸2", "pointList": [{ "x": 87.48722766169303, "y": 107.31459069181656 }, { "x": 175.27545534454737, "y": -9.248667175973459 }] }, { "name": "信上2", "voltageLevel": "330kV", "startSub": "上苑", "endSub": "信义", "startbind": "", "endbind": "信咸1", "pointList": [{ "x": 90.90121429380403, "y": 113.16713920400684 }, { "x": 180.64029148072186, "y": -5.834680543862427 }] }, { "name": "信秦", "voltageLevel": "750kV", "startSub": "信义", "endSub": "秦岭750", "startbind": "", "endbind": "", "pointList": [{ "x": 179.1771543526743, "y": -9.736379551989303 }, { "x": 275.25649242779826, "y": 20.014075384978 }] }, { "name": "信咸1", "voltageLevel": "330kV", "startSub": "咸林", "endSub": "信义", "startbind": "", "endbind": "信上2", "pointList": [{ "x": 236.2395023465296, "y": 48.7891055699136 }, { "x": 175.76316772056327, "y": -5.834680543862447 }] }, { "name": "信咸2", "voltageLevel": "330kV", "startSub": "咸林", "endSub": "信义", "startbind": "", "endbind": "信上1", "pointList": [{ "x": 240.1412013546565, "y": 44.887406561786754 }, { "x": 180.64029148072186, "y": -10.224091928005173 }] }, { "name": "咸鹤1", "voltageLevel": "330kV", "startSub": "咸林", "endSub": "鹤城", "startbind": "", "endbind": "", "pointList": [{ "x": 236.23950234652963, "y": 45.86283131381846 }, { "x": 221.12041869003806, "y": 131.2124971165936 }] }, { "name": "咸鹤2", "voltageLevel": "330kV", "startSub": "咸林", "endSub": "鹤城", "startbind": "", "endbind": "", "pointList": [{ "x": 240.1412013546565, "y": 46.8382560658502 }, { "x": 226.97296720222832, "y": 130.23707236456187 }] }, { "name": "咸罗1", "voltageLevel": "330kV", "startSub": "咸林", "endSub": "罗敷", "startbind": "", "endbind": "", "pointList": [{ "x": 238.6780642266089, "y": 42.93655705772331 }, { "x": 325.49086715743164, "y": 91.70779465930909 }] }, { "name": "咸罗2", "voltageLevel": "330kV", "startSub": "咸林", "endSub": "罗敷", "startbind": "", "endbind": "", "pointList": [{ "x": 238.6780642266089, "y": 50.73995507397706 }, { "x": 326.4662919094633, "y": 98.04805554751522 }] }, { "name": "罗赵1", "voltageLevel": "330kV", "startSub": "罗敷", "endSub": "赵家坪牵", "startbind": "", "endbind": "", "pointList": [{ "x": 326.4662919094633, "y": 88.29380802719805 }, { "x": 304.03152261273385, "y": 51.71537982600876 }] }, { "name": "秦赵", "voltageLevel": "330kV", "startSub": "赵家坪牵", "endSub": "秦岭330", "startbind": "", "endbind": "", "pointList": [{ "x": 302.56838548468625, "y": 43.91198180975505 }, { "x": 357.1921715984623, "y": 24.891199145136568 }] }, { "name": "罗秦3", "voltageLevel": "330kV", "startSub": "秦岭330", "endSub": "罗敷", "startbind": "", "endbind": "", "pointList": [{ "x": 363.5324324866684, "y": 25.378911521152418 }, { "x": 327.44171666149504, "y": 90.73236990727736 }] }, { "name": "罗秦1", "voltageLevel": "330kV", "startSub": "罗敷", "endSub": "秦岭二厂", "startbind": "", "endbind": "", "pointList": [{ "x": 328.4171414135267, "y": 89.75694515524566 }, { "x": 391.3320379195724, "y": 85.36753377110296 }] }, { "name": "罗秦2", "voltageLevel": "330kV", "startSub": "罗敷", "endSub": "秦岭二厂", "startbind": "", "endbind": "", "pointList": [{ "x": 325.00315478141573, "y": 97.07263079548352 }, { "x": 391.8197502955883, "y": 92.19550703532497 }] }, { "name": "罗灵", "voltageLevel": "330kV", "startSub": "罗敷", "endSub": "灵宝", "startbind": "", "endbind": "", "pointList": [{ "x": 328.4171414135267, "y": 92.19550703532497 }, { "x": 414.7422319683335, "y": -15.588928064179612 }] }, { "name": "罗张", "voltageLevel": "330kV", "startSub": "罗敷", "endSub": "张村", "startbind": "", "endbind": "", "pointList": [{ "x": 325.00315478141573, "y": 95.12178129142006 }, { "x": 291.8387132123374, "y": 149.2578550291803 }] }, { "name": "鹤张1", "voltageLevel": "330kV", "startSub": "鹤城", "endSub": "张村", "startbind": "", "endbind": "", "pointList": [{ "x": 225.0221176981649, "y": 124.87223622838741 }, { "x": 290.8632884603057, "y": 144.38073126902174 }] }, { "name": "鹤张2", "voltageLevel": "330kV", "startSub": "鹤城", "endSub": "张村", "startbind": "", "endbind": "", "pointList": [{ "x": 226.48525482621247, "y": 130.7247847405777 }, { "x": 295.2526998444484, "y": 151.20870453324375 }] }, { "name": "张鹿1", "voltageLevel": "330kV", "startSub": "张村", "endSub": "鹿城", "startbind": "", "endbind": "", "pointList": [{ "x": 292.32642558835323, "y": 148.77014265316444 }, { "x": 334.269689925717, "y": 198.5168050067819 }] }, { "name": "张鹿2", "voltageLevel": "330kV", "startSub": "张村", "endSub": "鹿城", "startbind": "", "endbind": "", "pointList": [{ "x": 297.6912617245277, "y": 144.38073126902174 }, { "x": 339.1468136858756, "y": 193.1519688706075 }] }, { "name": "信灵1", "voltageLevel": "330kV", "startSub": "灵宝", "endSub": "信义", "startbind": "", "endbind": "", "pointList": [{ "x": 414.2545195923177, "y": -20.953764200354044 }, { "x": 181.61571623275358, "y": -12.662653808084471 }] }, { "name": "信灵2", "voltageLevel": "330kV", "startSub": "灵宝", "endSub": "信义", "startbind": "", "endbind": "信禹3", "pointList": [{ "x": 413.7668072163018, "y": -14.613503312147888 }, { "x": 183.566565736817, "y": -8.27324242394174 }] }, { "name": "信来1", "voltageLevel": "330kV", "startSub": "来化牵", "endSub": "信义", "startbind": "", "endbind": "信渭1", "pointList": [{ "x": 281.1090409399886, "y": -63.38474091373365 }, { "x": 174.78774296853155, "y": -16.564352816211308 }] }, { "name": "信来2", "voltageLevel": "330kV", "startSub": "来化牵", "endSub": "信义", "startbind": "", "endbind": "信禹4", "pointList": [{ "x": 282.5721780680361, "y": -60.45846665763852 }, { "x": 182.59114098478528, "y": -14.125790936132026 }] }, { "name": "上东1", "voltageLevel": "330kV", "startSub": "上苑", "endSub": "东郊", "startbind": "", "endbind": "", "pointList": [{ "x": 83.09781627755031, "y": 110.2408649479117 }, { "x": 48.470237580424424, "y": 63.90818922640517 }] }, { "name": "上东2", "voltageLevel": "330kV", "startSub": "上苑", "endSub": "东郊", "startbind": "", "endbind": "", "pointList": [{ "x": 89.43807716575647, "y": 111.21628969994342 }, { "x": 49.933374708471995, "y": 57.56792833819907 }] }, { "name": "东代1", "voltageLevel": "330kV", "startSub": "东郊", "endSub": "代王", "startbind": "", "endbind": "", "pointList": [{ "x": 48.957949956440274, "y": 56.10479121015147 }, { "x": 98.70461231005777, "y": 46.350543689834296 }] }, { "name": "东代2", "voltageLevel": "330kV", "startSub": "东郊", "endSub": "代王", "startbind": "", "endbind": "", "pointList": [{ "x": 50.9087994605037, "y": 60.98191497031007 }, { "x": 100.16774943810532, "y": 51.71537982600876 }] }, { "name": "渭代", "voltageLevel": "330kV", "startSub": "代王", "endSub": "渭南", "startbind": "", "endbind": "", "pointList": [{ "x": 100.65546181412117, "y": 47.32596844186605 }, { "x": 70.9050068771539, "y": -1.932981535735589 }] }, { "name": "渭东", "voltageLevel": "330kV", "startSub": "渭南", "endSub": "东郊", "startbind": "", "endbind": "", "pointList": [{ "x": 66.51559549301115, "y": -1.4452691597197411 }, { "x": 46.519388076361, "y": 60.981914970310065 }] }, { "name": "咸东", "voltageLevel": "330kV", "startSub": "东郊", "endSub": "", "startbind": "", "endbind": "", "pointList": [{ "x": 51.39651183651958, "y": 61.46962734632592 }, { "x": 175.2754553445474, "y": 87.31838327516638 }, { "x": 240.62891373067237, "y": 46.8382560658502 }] }, { "name": "咸代", "voltageLevel": "330kV", "startSub": "代王", "endSub": "咸林", "startbind": "", "endbind": "", "pointList": [{ "x": 103.09402369420047, "y": 51.22766744999291 }, { "x": 239.16577660262476, "y": 44.3996941857709 }] }, { "name": "上南1", "voltageLevel": "330kV", "startSub": "上苑", "endSub": "", "startbind": "", "endbind": "", "pointList": [{ "x": 82.12239152551861, "y": 111.2162896999434 }, { "x": -18.346357933748074, "y": 133.16334662065697 }] }, { "name": "上南2", "voltageLevel": "330kV", "startSub": "上苑", "endSub": "", "startbind": "", "endbind": "", "pointList": [{ "x": 85.53637815762963, "y": 117.06883821213367 }, { "x": -22.735769317890796, "y": 140.47903226089485 }] }, { "name": "信禹1", "voltageLevel": "330kV", "startSub": "韩城二厂#1、2机", "endSub": "信义", "startbind": "", "endbind": "", "pointList": [{ "x": 104.06944844623217, "y": -155.0746676047149 }, { "x": 174.78774296853157, "y": -9.736379551989302 }] }, { "name": "信禹2", "voltageLevel": "330kV", "startSub": "韩城二厂#1、2机", "endSub": "信义", "startbind": "", "endbind": "信渭2", "pointList": [{ "x": 106.99572270232734, "y": -160.4395037408893 }, { "x": 177.71401722462667, "y": -12.66265380808447 }] }, { "name": "信禹3", "voltageLevel": "330kV", "startSub": "韩城二厂3、4号机", "endSub": "信义", "startbind": "", "endbind": "信灵2", "pointList": [{ "x": 162.10722119211928, "y": -157.02551710877833 }, { "x": 176.25088009657915, "y": -16.564352816211308 }] }, { "name": "信禹4", "voltageLevel": "330kV", "startSub": "韩城二厂3、4号机", "endSub": "信义", "startbind": "", "endbind": "信来2", "pointList": [{ "x": 166.98434495227784, "y": -156.53780473276248 }, { "x": 180.152579104706, "y": -16.07664044019546 }] }, { "name": "禹桢1", "voltageLevel": "330kV", "startSub": "韩城二厂3、4号机", "endSub": "桢州", "startbind": "", "endbind": "", "pointList": [{ "x": 166.9843449522778, "y": -161.9026408689369 }, { "x": 214.29244542581603, "y": -147.75898196447702 }] }, { "name": "禹桢2", "voltageLevel": "330kV", "startSub": "韩城二厂3、4号机", "endSub": "桢州", "startbind": "", "endbind": "", "pointList": [{ "x": 165.0334954482144, "y": -153.12381810065148 }, { "x": 214.78015780183188, "y": -140.44329632423916 }] }, { "name": "韩二站内", "voltageLevel": "330kV", "startSub": "韩城二厂#1、2机", "endSub": "韩城二厂3、4号机", "startbind": "", "endbind": "", "pointList": [{ "x": 106.50801032631148, "y": -158.4886542368259 }, { "x": 167.95976970430956, "y": -161.41492849292104 }] }, { "name": "韩二站内_1", "voltageLevel": "330kV", "startSub": "韩城二厂#1、2机", "endSub": "韩城二厂3、4号机", "startbind": "", "endbind": "", "pointList": [{ "x": 105.53258557427978, "y": -151.6606809726039 }, { "x": 164.0580706961827, "y": -153.12381810065148 }] }, { "name": "西高", "voltageLevel": "330kV", "startSub": "西庄", "endSub": "高明", "startbind": "", "endbind": "", "pointList": [{ "x": 41.154551940186565, "y": -147.75898196447702 }, { "x": 48.470237580424424, "y": -80.45467407428868 }] }, { "name": "渭高", "voltageLevel": "330kV", "startSub": "高明", "endSub": "渭南", "startbind": "", "endbind": "", "pointList": [{ "x": 48.470237580424424, "y": -80.45467407428868 }, { "x": 68.4664449970746, "y": -6.322392919878311 }] }, { "name": "高奇1", "voltageLevel": "330kV", "startSub": "高明", "endSub": "太奇里", "startbind": "", "endbind": "", "pointList": [{ "x": 46.03167570034512, "y": -84.84408545843141 }, { "x": -6.153548533351629, "y": -79.47924932225698 }] }, { "name": "高奇2", "voltageLevel": "330kV", "startSub": "高明", "endSub": "太奇里", "startbind": "", "endbind": "", "pointList": [{ "x": 47.982525204408574, "y": -77.52839981819352 }, { "x": -6.641260909367503, "y": -73.13898843405082 }] }, { "name": "禹西1", "voltageLevel": "330kV", "startSub": "韩城二厂#1、2机", "endSub": "西庄", "startbind": "", "endbind": "", "pointList": [{ "x": 106.99572270232733, "y": -157.51322948479418 }, { "x": 45.05625094831342, "y": -148.2466943404929 }] }, { "name": "西韩", "voltageLevel": "330kV", "startSub": "西庄", "endSub": "", "startbind": "", "endbind": "", "pointList": [{ "x": 39.20370243612314, "y": -148.2466943404929 }, { "x": -63.70360890322284, "y": -155.56237998073075 }] }, { "name": "禹西2", "voltageLevel": "330kV", "startSub": "西庄", "endSub": "韩城二厂#1、2机", "startbind": "", "endbind": "", "pointList": [{ "x": 46.03167570034512, "y": -142.3941458283026 }, { "x": 107.97114745435908, "y": -154.09924285268318 }] }, { "name": "鹤柞", "voltageLevel": "330kV", "startSub": "鹤城", "endSub": "", "startbind": "", "endbind": "", "pointList": [{ "x": 217.70643205792703, "y": 126.82308573245086 }, { "x": 116.26225784662864, "y": 163.40151393364016 }] }, { "name": "鹤香", "voltageLevel": "330kV", "startSub": "鹤城", "endSub": "", "startbind": "", "endbind": "", "pointList": [{ "x": 224.0466929461332, "y": 134.13877137268872 }, { "x": 138.69702714335807, "y": 203.39392876694052 }] }, { "name": "信洛2", "voltageLevel": "750kV", "startSub": "信义", "endSub": "洛川", "startbind": "乾信1", "endbind": "", "pointList": [{ "x": 182.59114098478528, "y": -12.174941432068607 }, { "x": 254.28486025911636, "y": -164.82891512503207 }, { "x": 177.7140172246267, "y": -223.84211262295082 }] }, { "name": "信山1", "voltageLevel": "750kV", "startSub": "信义", "endSub": "南山", "startbind": "", "endbind": "", "pointList": [{ "x": 175.7631677205633, "y": -0.46984440768801683 }, { "x": 139.18473951937395, "y": 118.04426296416537 }, { "x": -42.73197673454098, "y": 205.8324906470198 }] }, { "name": "信洛1", "voltageLevel": "750kV", "startSub": "信义", "endSub": "洛川", "startbind": "乾信2", "endbind": "", "pointList": [{ "x": 176.25088009657912, "y": -14.125790936132034 }, { "x": 245.99374986684677, "y": -161.41492849292104 }, { "x": 173.32460584048397, "y": -218.47727648677642 }] }, { "name": "乾信2", "voltageLevel": "750kV", "startSub": "信义", "endSub": "乾县", "startbind": "信洛1", "endbind": "", "pointList": [{ "x": 168.93519445634126, "y": -12.174941432068607 }, { "x": 97.24147518201016, "y": -41.92539636903592 }, { "x": -97.84347522433289, "y": -23.39232608043332 }] }, { "name": "乾信1", "voltageLevel": "750kV", "startSub": "信义", "endSub": "乾县", "startbind": "信洛2", "endbind": "", "pointList": [{ "x": 171.37375633642057, "y": -16.07664044019546 }, { "x": 96.75376280599431, "y": -49.72879438528963 }, { "x": -96.86805047230116, "y": -30.22029934465533 }] }], "generation": [] };
+
+exports.default = xinyiData;
+
+},{}],190:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48463,6 +48473,10 @@ var _portPanel = require('./components/port-panel');
 var _portPanel2 = _interopRequireDefault(_portPanel);
 
 var _dataDefinitions = require('./data-definitions');
+
+var _sampleData = require('../../sampleData');
+
+var _sampleData2 = _interopRequireDefault(_sampleData);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -48514,29 +48528,45 @@ var App = function (_React$Component) {
           return o.hide();
         });
 
-        if (cmd.info.group === '绘制' && cmd.info.toolName === '选择') {
-          this.paper.currentTool = 'select';
-          this.paper.newLine();
+        if (cmd.info.group === '绘制') {
+          if (cmd.info.toolName === '选择') {
+            this.paper.currentTool = 'select';
+            this.paper.newLine();
+          }
+          if (cmd.info.group === '绘制' && cmd.info.toolName === '变电站') {
+            this.paper.currentTool = 'substation';
+            this.paper.newLine();
+          }
+          if (cmd.info.group === '绘制' && cmd.info.toolName === '输电线') {
+            this.paper.currentTool = 'powerline';
+            this.paper.newLine();
+          }
+          if (cmd.info.group === '绘制' && cmd.info.toolName === '平移') {
+            this.paper.currentTool = 'pan';
+            this.paper.newLine();
+          }
+          if (cmd.info.group === '绘制' && cmd.info.toolName === '放大') {
+            this.paper.currentTool = 'pan';
+            this.paper.zoom(false);
+          }
+          if (cmd.info.group === '绘制' && cmd.info.toolName === '缩小') {
+            this.paper.currentTool = 'pan';
+            this.paper.zoom(true);
+          }
+          if (cmd.info.group === '绘制' && cmd.info.toolName === '330故障') {
+            this.paper.currentTool = 'fault';
+            this.paper.fault('330kV');
+            this.paper.newLine();
+          }
+          if (cmd.info.group === '绘制' && cmd.info.toolName === '750故障') {
+            this.paper.currentTool = 'fault';
+            this.paper.fault('750kV');
+            this.paper.newLine();
+          }
+          return;
         }
-        if (cmd.info.group === '绘制' && cmd.info.toolName === '变电站') {
-          this.paper.currentTool = 'substation';
-          this.paper.newLine();
-        }
-        if (cmd.info.group === '绘制' && cmd.info.toolName === '输电线') {
-          this.paper.currentTool = 'powerline';
-          this.paper.newLine();
-        }
-        if (cmd.info.group === '绘制' && cmd.info.toolName === '平移') {
-          this.paper.currentTool = 'pan';
-          this.paper.newLine();
-        }
-        if (cmd.info.group === '绘制' && cmd.info.toolName === '故障') {
-          this.paper.currentTool = 'fault';
-          this.paper.fault();
-          this.paper.newLine();
-        }
-        return;
-      } else if (cmd.type === 'hide-panel') {
+      }
+      if (cmd.type === 'hide-panel') {
         this.setState({ showPanel: false });
         return;
       } else if (cmd.type === 'show-panel') {
@@ -48624,6 +48654,10 @@ var App = function (_React$Component) {
       var paper = (0, _raphaelCustomize2.default)();
       paper.currentTool = 'select';
       window.devpaper = this.paper = paper;
+      this.setState({ showPort: false });
+      this.paper.import(_sampleData2.default);
+      this.paper.viewAll();
+      return;
     }
   }]);
 
@@ -48632,7 +48666,7 @@ var App = function (_React$Component) {
 
 exports.default = App;
 
-},{"./components/port-panel":190,"./components/property-panel":195,"./components/status-bar":196,"./components/toolbar":199,"./data-definitions":200,"./raphael-customize":202,"lodash":26,"react":188}],190:[function(require,module,exports){
+},{"../../sampleData":189,"./components/port-panel":191,"./components/property-panel":196,"./components/status-bar":197,"./components/toolbar":200,"./data-definitions":201,"./raphael-customize":203,"lodash":26,"react":188}],191:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48724,7 +48758,7 @@ var PortPanel = function (_React$Component) {
 
 exports.default = PortPanel;
 
-},{"react":188}],191:[function(require,module,exports){
+},{"react":188}],192:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48797,7 +48831,7 @@ var PropertyPanelCombo = function (_React$Component) {
 
 exports.default = PropertyPanelCombo;
 
-},{"lodash":26,"prop-types":32,"react":188}],192:[function(require,module,exports){
+},{"lodash":26,"prop-types":32,"react":188}],193:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48870,7 +48904,7 @@ var PropertyPanelObjectName = function (_React$Component) {
 
 exports.default = PropertyPanelObjectName;
 
-},{"lodash":26,"prop-types":32,"react":188}],193:[function(require,module,exports){
+},{"lodash":26,"prop-types":32,"react":188}],194:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -48961,7 +48995,7 @@ var PropertyPanelPoint = function (_React$Component) {
 
 exports.default = PropertyPanelPoint;
 
-},{"lodash":26,"prop-types":32,"react":188}],194:[function(require,module,exports){
+},{"lodash":26,"prop-types":32,"react":188}],195:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -49023,7 +49057,7 @@ var PropertyPanelText = function (_React$Component) {
 
 exports.default = PropertyPanelText;
 
-},{"lodash":26,"prop-types":32,"react":188}],195:[function(require,module,exports){
+},{"lodash":26,"prop-types":32,"react":188}],196:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -49268,7 +49302,7 @@ PropertyPanel.propTypes = {
 
 exports.default = PropertyPanel;
 
-},{"../data-definitions":200,"./property-panel-combo":191,"./property-panel-objectName":192,"./property-panel-point":193,"./property-panel-text":194,"lodash":26,"prop-types":32,"react":188}],196:[function(require,module,exports){
+},{"../data-definitions":201,"./property-panel-combo":192,"./property-panel-objectName":193,"./property-panel-point":194,"./property-panel-text":195,"lodash":26,"prop-types":32,"react":188}],197:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49318,7 +49352,7 @@ var StatusBar = function (_React$Component) {
 
 exports.default = StatusBar;
 
-},{"react":188}],197:[function(require,module,exports){
+},{"react":188}],198:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -49395,7 +49429,7 @@ ToolbarButton.propTypes = {
 
 exports.default = ToolbarButton;
 
-},{"lodash":26,"prop-types":32,"react":188}],198:[function(require,module,exports){
+},{"lodash":26,"prop-types":32,"react":188}],199:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -49481,7 +49515,7 @@ ToolbarRadioButton.propTypes = {
 
 exports.default = ToolbarRadioButton;
 
-},{"lodash":26,"prop-types":32,"react":188}],199:[function(require,module,exports){
+},{"lodash":26,"prop-types":32,"react":188}],200:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -49533,11 +49567,18 @@ var Toolbar = function (_React$Component) {
           'div',
           { className: 'toolbar-group' },
           _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u9009\u62E9' }),
-          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u5E73\u79FB' }),
           _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u53D8\u7535\u7AD9' }),
           _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u8F93\u7535\u7EBF' }),
           _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u53D1\u7535\u5382' }),
-          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u6545\u969C' })
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '330\u6545\u969C' }),
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '750\u6545\u969C' })
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'toolbar-group' },
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u5E73\u79FB' }),
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u653E\u5927' }),
+          _react2.default.createElement(_toolbarRadioButton2.default, { handleClick: this.props.onCommand, currentTool: this.props.currentTool, group: '\u7ED8\u5236', content: '\u7F29\u5C0F' })
         ),
         _react2.default.createElement(
           'div',
@@ -49560,7 +49601,7 @@ Toolbar.propTypes = {
 
 exports.default = Toolbar;
 
-},{"./toolbar-button":197,"./toolbar-radio-button":198,"prop-types":32,"react":188}],200:[function(require,module,exports){
+},{"./toolbar-button":198,"./toolbar-radio-button":199,"prop-types":32,"react":188}],201:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49660,7 +49701,7 @@ exports.default = {
 };
 var defaultData = exports.defaultData = { "substation": [{ "name": "咸林变", "voltageLevel": "330kV", "location": { "x": 178.66554192701975, "y": 44.458204785982765 } }, { "name": "上苑变", "voltageLevel": "330kV", "location": { "x": 98.82999980449677, "y": 24.06834129492443 } }, { "name": "渭南变", "voltageLevel": "330kV", "location": { "x": 126.94383517901099, "y": -35.88487100601197 } }, { "name": "灵宝换流站", "voltageLevel": "330kV", "location": { "x": 342.2181399265925, "y": -1.9495332241058336 } }, { "name": "来化牵引变", "voltageLevel": "330kV", "location": { "x": 214.23733878135678, "y": -60.52907721201579 } }, { "name": "信义变", "voltageLevel": "750kV", "location": { "x": 178.88512114683783, "y": -9.928445061047874 } }], "powerline": [{ "name": "信来1线", "voltageLevel": "330kV", "startSub": "来化牵引变", "endSub": "信义变", "startbind": "", "endbind": "信渭1线", "pointList": [{ "x": 210.43288346131638, "y": -63.4632520278295 }, { "x": 176.41405699650446, "y": -18.626432677110035 }] }, { "name": "信来2线", "voltageLevel": "330kV", "startSub": "来化牵引变", "endSub": "信义变", "startbind": "", "endbind": "信灵1线", "pointList": [{ "x": 216.790634671847, "y": -59.17451337973277 }, { "x": 178.82578911383942, "y": -11.805173059304552 }] }, { "name": "信灵1线", "voltageLevel": "330kV", "startSub": "信义变", "endSub": "灵宝换流站", "startbind": "信来2线", "endbind": "", "pointList": [{ "x": 181.22351296742758, "y": -15.562434395154318 }, { "x": 343.6945098638535, "y": -7.63701991240183 }] }, { "name": "信灵2线", "voltageLevel": "330kV", "startSub": "信义变", "endSub": "灵宝换流站", "startbind": "信咸2线", "endbind": "", "pointList": [{ "x": 182.45507927735645, "y": -7.63701991240183 }, { "x": 345.4921772082647, "y": 0.8544956048329718 }] }, { "name": "信咸1线", "voltageLevel": "330kV", "startSub": "咸林变", "endSub": "信义变", "startbind": "", "endbind": "信上2线", "pointList": [{ "x": 175.2297699848811, "y": 49.17181201775869 }, { "x": 175.2297699848811, "y": -7.438291430473321 }] }, { "name": "信咸2线", "voltageLevel": "330kV", "startSub": "咸林变", "endSub": "信义变", "startbind": "", "endbind": "信灵2线", "pointList": [{ "x": 181.12414872646335, "y": 44.3275910615921 }, { "x": 181.79225981235507, "y": -12.792562643686935 }] }, { "name": "信上1线", "voltageLevel": "330kV", "startSub": "上苑变", "endSub": "信义变", "startbind": "", "endbind": "信渭2线", "pointList": [{ "x": 94.4113262097041, "y": 20.434663414955146 }, { "x": 174.79767310619354, "y": -14.663600722948711 }] }, { "name": "信上2线", "voltageLevel": "330kV", "startSub": "上苑变", "endSub": "信义变", "startbind": "", "endbind": "信咸1线", "pointList": [{ "x": 101.40326710542044, "y": 25.196840087572735 }, { "x": 178.95910882949826, "y": -8.769221981366476 }] }, { "name": "信渭2线", "voltageLevel": "330kV", "startSub": "渭南变", "endSub": "信义变", "startbind": "", "endbind": "信上1线", "pointList": [{ "x": 122.34900538126627, "y": -33.67766749858856 }, { "x": 174.99640158812204, "y": -5.93871680895487 }] }, { "name": "信渭1线", "voltageLevel": "330kV", "startSub": "渭南变", "endSub": "信义变", "startbind": "", "endbind": "信来1线", "pointList": [{ "x": 129.1422177950541, "y": -37.07427370548248 }, { "x": 178.95910882949826, "y": -13.298030257225042 }] }], "generation": [] };
 
-},{}],201:[function(require,module,exports){
+},{}],202:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -49693,7 +49734,7 @@ window._ = _lodash2.default;
 
 _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.getElementById('app'));
 
-},{"./app":189,"jquery":25,"lodash":26,"react":188,"react-dom":35}],202:[function(require,module,exports){
+},{"./app":190,"jquery":25,"lodash":26,"react":188,"react-dom":35}],203:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49741,7 +49782,7 @@ function raphaelInit() {
   stage = document.getElementById('stage');
   window.stage = stage;
   paper = (0, _raphael2.default)('stage');
-  paper.layers(['powerline', 'generation', 'substation', 'BBox', 'pseudo']);
+  paper.layers(['label', 'powerline', 'generation', 'substation', 'BBox', 'pseudo']);
   _lodash2.default.forOwn(paper.layers, function (o) {
     return o.update = function () {};
   });
@@ -49763,7 +49804,7 @@ function raphaelInit() {
 
 exports.default = _lodash2.default.once(raphaelInit);
 
-},{"./data-definitions":200,"./raphael-entity-extensions":203,"./raphael-stage-extensions":204,"./raphael-theme-default":205,"jquery":25,"lodash":26,"raphael":34}],203:[function(require,module,exports){
+},{"./data-definitions":201,"./raphael-entity-extensions":204,"./raphael-stage-extensions":205,"./raphael-theme-default":206,"jquery":25,"lodash":26,"raphael":34}],204:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -50077,7 +50118,7 @@ function mount(Raphael) {
 
 exports.default = mount;
 
-},{"./data-definitions":200,"jquery":25,"jquery-mousewheel":24,"lodash":26}],204:[function(require,module,exports){
+},{"./data-definitions":201,"jquery":25,"jquery-mousewheel":24,"lodash":26}],205:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -50614,7 +50655,7 @@ function mount(Raphael) {
     });
   };
   var listenOnceFlags = {};
-  Raphael.fn.fault = function () {
+  Raphael.fn.fault = function (voltageLevel) {
     var paper = this;
     if (!listenOnceFlags['fault']) {
       listenOnceFlags['fault'] = true;
@@ -50626,7 +50667,7 @@ function mount(Raphael) {
             var subName = el.data('data').name;
             console.log('移除 ' + subName);
             _lodash2.default.forEach(paper.entities, function (e) {
-              if (e && e.data('def') === 'powerline' && _lodash2.default.indexOf(linesToRemove, e) < 0) {
+              if (e && e.data('def') === 'powerline' && e.data('data').voltageLevel === voltageLevel && _lodash2.default.indexOf(linesToRemove, e) < 0) {
                 var data = e.data('data');
                 var bind;
                 if (data.startSub === subName) {
@@ -50643,6 +50684,14 @@ function mount(Raphael) {
                     linesToRemove.push(e);
                     linesToRemove.push(bind);
                     paper.powerline(nldata);
+                  } else {
+                    console.log(1);
+                    var endpoint = _lodash2.default.nth(data.pointList, -1);
+                    _lodash2.default.forEach(data.pointList, function (o, k) {
+                      o.x -= (o.x - endpoint.x) * 0.5;
+                      o.y -= (o.y - endpoint.y) * 0.5;
+                    });
+                    e.update();
                   }
                 }
                 if (e.data('data').endSub === subName) {
@@ -50659,6 +50708,13 @@ function mount(Raphael) {
                     linesToRemove.push(e);
                     linesToRemove.push(bind);
                     paper.powerline(nldata);
+                  } else {
+                    var startPoint = _lodash2.default.nth(data.pointList, 0);
+                    _lodash2.default.forEach(data.pointList, function (o, k) {
+                      o.x -= (o.x - startPoint.x) * 0.5;
+                      o.y -= (o.y - startPoint.y) * 0.5;
+                    });
+                    e.update();
                   }
                 }
               }
@@ -50666,7 +50722,6 @@ function mount(Raphael) {
             _lodash2.default.forEach(linesToRemove, function (l) {
               return l.Remove();
             });
-            el.Remove();
           }
         }
       });
@@ -50682,7 +50737,7 @@ function mount(Raphael) {
 
 exports.default = mount;
 
-},{"./data-definitions":200,"jquery":25,"jquery-mousewheel":24,"lodash":26}],205:[function(require,module,exports){
+},{"./data-definitions":201,"jquery":25,"jquery-mousewheel":24,"lodash":26}],206:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -50745,6 +50800,7 @@ function mount(Raphael) {
       });
       text.data('font-size', 20);
       text.data('stroke-width', 1);
+      text.insertIntoLayer('label');
       text.update = function () {
         var data = shape.data('data');
         var box = shape.getBBox();
@@ -50824,6 +50880,7 @@ function mount(Raphael) {
       });
       text.data('font-size', 20);
       text.data('stroke-width', 1);
+      text.insertIntoLayer('label');
       var prevname = '';
       text.update = function () {
         var data = shape.data('data');
@@ -50941,4 +50998,4 @@ function mount(Raphael) {
 
 exports.default = mount;
 
-},{"./data-definitions":200,"jquery":25,"lodash":26,"raphael":34}]},{},[201]);
+},{"./data-definitions":201,"jquery":25,"lodash":26,"raphael":34}]},{},[202]);

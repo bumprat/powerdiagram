@@ -40,6 +40,7 @@ function mount(Raphael){
       });
       text.data('font-size', 20);
       text.data('stroke-width', 1);
+      text.insertIntoLayer('label');
       text.update = function(){
         var data = shape.data('data');
         var box = shape.getBBox();
@@ -117,6 +118,7 @@ function mount(Raphael){
       });
       text.data('font-size', 20);
       text.data('stroke-width', 1);
+      text.insertIntoLayer('label');
       var prevname = '';
       text.update = function(){
         var data = shape.data('data');

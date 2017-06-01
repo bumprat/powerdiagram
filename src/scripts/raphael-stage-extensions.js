@@ -518,62 +518,78 @@ function mount(Raphael){
     })
   }
   var listenOnceFlags = {};
-  Raphael.fn.fault = function(){
+  Raphael.fn.fault = function (voltageLevel) {
     var paper = this;
-    if(!listenOnceFlags['fault']){
-      listenOnceFlags['fault']=true;
-      eve.on('pd.entity.noselect.*', function(){
-        if(paper.currentTool === 'fault'){
+    if (!listenOnceFlags['fault']) {
+      listenOnceFlags['fault'] = true;
+      eve.on('pd.entity.noselect.*', function () {
+        if (paper.currentTool === 'fault') {
           var el = this;
-          if(el.data('def') === 'substation'){
-            var linesToRemove=[];
+          if (el.data('def') === 'substation') {
+            var linesToRemove = [];
             var subName = el.data('data').name;
             console.log('移除 ' + subName);
-            _.forEach(paper.entities, function(e){
-              if(e && e.data('def')==='powerline' && _.indexOf(linesToRemove, e)<0){
+            _.forEach(paper.entities, function (e) {
+              if (e && e.data('def') === 'powerline' && e.data('data').voltageLevel === voltageLevel && _.indexOf(linesToRemove, e) < 0) {
                 var data = e.data('data');
                 var bind;
-                if(data.startSub===subName){
-                  if(bind = paper.getEntityByName(data.startbind)){
+                if (data.startSub === subName) {
+                  if (bind = paper.getEntityByName(data.startbind)) {
                     var binddata = bind.data('data');
                     var nldata = {};
                     nldata.name = data.name + "_" + binddata.name;
                     nldata.voltageLevel = data.voltageLevel;
                     nldata.startSub = data.endSub;
-                    nldata.endSub = binddata.startSub===subName? binddata.endSub:binddata.startSub;
+                    nldata.endSub = binddata.startSub === subName ? binddata.endSub : binddata.startSub;
                     nldata.startbind = data.endbind;
-                    nldata.endbind = binddata.startSub===subName?binddata.endbind: binddata.startbind;
-                    nldata.pointList = [_.clone(_.nth(data.pointList, -1)), _.clone(_.nth(binddata.pointList, binddata.startSub===subName?-1:0))];
+                    nldata.endbind = binddata.startSub === subName ? binddata.endbind : binddata.startbind;
+                    nldata.pointList = [_.clone(_.nth(data.pointList, -1)), _.clone(_.nth(binddata.pointList, binddata.startSub === subName ? -1 : 0))];
                     linesToRemove.push(e);
                     linesToRemove.push(bind);
                     paper.powerline(nldata);
+                  } else {
+                    console.log(1);
+                    var endpoint = _.nth(data.pointList, -1);
+                    _.forEach(data.pointList, function (o, k) {
+                      o.x -= (o.x - endpoint.x) * 0.5;
+                      o.y -= (o.y - endpoint.y) * 0.5;
+                    });
+                    e.update();
                   }
                 }
-                if(e.data('data').endSub===subName){
-                  if(bind = paper.getEntityByName(data.endbind)){
+                if (e.data('data').endSub === subName) {
+                  if (bind = paper.getEntityByName(data.endbind)) {
                     var binddata = bind.data('data');
                     var nldata = {};
                     nldata.name = data.name + "_" + binddata.name;
                     nldata.voltageLevel = data.voltageLevel;
                     nldata.startSub = data.startSub;
-                    nldata.endSub = binddata.startSub===subName? binddata.endSub:binddata.startSub;
+                    nldata.endSub = binddata.startSub === subName ? binddata.endSub : binddata.startSub;
                     nldata.startbind = data.startbind;
-                    nldata.endbind = binddata.startSub===subName?binddata.endbind: binddata.startbind;
-                    nldata.pointList = [_.clone(_.nth(data.pointList, 0)), _.clone(_.nth(binddata.pointList, binddata.startSub===subName?-1:0))];
+                    nldata.endbind = binddata.startSub === subName ? binddata.endbind : binddata.startbind;
+                    nldata.pointList = [_.clone(_.nth(data.pointList, 0)), _.clone(_.nth(binddata.pointList, binddata.startSub === subName ? -1 : 0))];
                     linesToRemove.push(e);
                     linesToRemove.push(bind);
                     paper.powerline(nldata);
+                  } else {
+                    var startPoint = _.nth(data.pointList, 0);
+                    _.forEach(data.pointList, function (o, k) {
+                      o.x -= (o.x - startPoint.x) * 0.5;
+                      o.y -= (o.y - startPoint.y) * 0.5;
+                    });
+                    e.update();
                   }
                 }
               }
             });
-            _.forEach(linesToRemove, (l)=>l.Remove());
-            el.Remove();
+            _.forEach(linesToRemove, function (l) {
+              return l.Remove();
+            });
           }
         }
       });
     }
-  }
+  };
   Raphael.fn.getEntityByName = function(name){
     var paper = this;
     return _.find(paper.entities, (e)=>e.data('data').name===name);

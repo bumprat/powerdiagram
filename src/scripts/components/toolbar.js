@@ -13,11 +13,16 @@ class Toolbar extends React.Component{
       <div className="toolbar-container">
         <div className="toolbar-group">
           <ToolbarRadioButton handleClick={this.props.onCommand} currentTool={this.props.currentTool} group="绘制" content="选择"/>
-          <ToolbarRadioButton handleClick={this.props.onCommand} currentTool={this.props.currentTool} group="绘制" content="平移"/>
           <ToolbarRadioButton handleClick={this.props.onCommand} currentTool={this.props.currentTool} group="绘制" content="变电站"/>
           <ToolbarRadioButton handleClick={this.props.onCommand} currentTool={this.props.currentTool} group="绘制" content="输电线"/>
           <ToolbarRadioButton handleClick={this.props.onCommand} currentTool={this.props.currentTool} group="绘制" content="发电厂"/>
-          <ToolbarRadioButton handleClick={this.props.onCommand} currentTool={this.props.currentTool} group="绘制" content="故障"/>
+          <ToolbarRadioButton handleClick={this.props.onCommand} currentTool={this.props.currentTool} group="绘制" content="330故障"/>
+          <ToolbarRadioButton handleClick={this.props.onCommand} currentTool={this.props.currentTool} group="绘制" content="750故障"/>
+        </div>
+        <div className="toolbar-group">
+          <ToolbarRadioButton handleClick={this.props.onCommand} currentTool={this.props.currentTool} group="绘制" content="平移"/>
+          <ToolbarRadioButton handleClick={this.props.onCommand} currentTool={this.props.currentTool} group="绘制" content="放大"/>
+          <ToolbarRadioButton handleClick={this.props.onCommand} currentTool={this.props.currentTool} group="绘制" content="缩小"/>
         </div>
         <div className="toolbar-group">
           <ToolbarButton handleClick={this.props.onCommand} group="命令" content="导出" />

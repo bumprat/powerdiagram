@@ -17,7 +17,7 @@ function raphaelInit(){
   stage = document.getElementById('stage');
   window.stage = stage;
   paper = Raphael('stage');
-  paper.layers(['powerline', 'generation', 'substation', 'BBox', 'pseudo']);
+  paper.layers(['label', 'powerline', 'generation', 'substation', 'BBox', 'pseudo']);
   _.forOwn(paper.layers, (o)=>o.update=function(){});
   paper.panable();
   paper.scalable();

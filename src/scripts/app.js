@@ -6,6 +6,7 @@ import raphaelInit from "./raphael-customize";
 import PropertyPanel from "./components/property-panel";
 import PortPanel from "./components/port-panel";
 import {defaultData} from './data-definitions';
+import xinyiData from '../../sampleData';
 
 class App extends React.Component{
   constructor(props){
@@ -40,29 +41,45 @@ class App extends React.Component{
       this.setState({message:"选择工具:【"+cmd.info.group+"】"+cmd.info.toolName});
       _.forEach(this.paper.pseudo, (o)=>o.hide());
 
-      if(cmd.info.group === '绘制' && cmd.info.toolName==='选择'){
-        this.paper.currentTool = 'select';
-        this.paper.newLine();
+      if(cmd.info.group === '绘制'){
+        if(cmd.info.toolName==='选择'){
+          this.paper.currentTool = 'select';
+          this.paper.newLine();
+        }
+        if(cmd.info.group === '绘制' && cmd.info.toolName==='变电站'){
+          this.paper.currentTool = 'substation';
+          this.paper.newLine();
+        }
+        if(cmd.info.group === '绘制' && cmd.info.toolName==='输电线'){
+          this.paper.currentTool = 'powerline';
+          this.paper.newLine();
+        }
+        if(cmd.info.group === '绘制' && cmd.info.toolName==='平移'){
+          this.paper.currentTool = 'pan';
+          this.paper.newLine();
+        }
+        if(cmd.info.group === '绘制' && cmd.info.toolName==='放大'){
+          this.paper.currentTool = 'pan';
+          this.paper.zoom(false);
+        }
+        if(cmd.info.group === '绘制' && cmd.info.toolName==='缩小'){
+          this.paper.currentTool = 'pan';
+          this.paper.zoom(true);
+        }
+        if(cmd.info.group === '绘制' && cmd.info.toolName==='330故障'){
+          this.paper.currentTool = 'fault';
+          this.paper.fault('330kV');
+          this.paper.newLine();
+        }
+        if(cmd.info.group === '绘制' && cmd.info.toolName==='750故障'){
+          this.paper.currentTool = 'fault';
+          this.paper.fault('750kV');
+          this.paper.newLine();
+        }
+        return;
       }
-      if(cmd.info.group === '绘制' && cmd.info.toolName==='变电站'){
-        this.paper.currentTool = 'substation';
-        this.paper.newLine();
-      }
-      if(cmd.info.group === '绘制' && cmd.info.toolName==='输电线'){
-        this.paper.currentTool = 'powerline';
-        this.paper.newLine();
-      }
-      if(cmd.info.group === '绘制' && cmd.info.toolName==='平移'){
-        this.paper.currentTool = 'pan';
-        this.paper.newLine();
-      }
-      if(cmd.info.group === '绘制' && cmd.info.toolName==='故障'){
-        this.paper.currentTool = 'fault';
-        this.paper.fault();
-        this.paper.newLine();
-      }
-      return;
-    }else if(cmd.type === 'hide-panel'){
+    }
+    if(cmd.type === 'hide-panel'){
       this.setState({showPanel : false});
       return;
     }else if(cmd.type === 'show-panel'){
@@ -143,6 +160,10 @@ class App extends React.Component{
     var paper = raphaelInit();
     paper.currentTool = 'select';
     window.devpaper = this.paper = paper;
+    this.setState({showPort:false});
+    this.paper.import(xinyiData);
+    this.paper.viewAll();
+    return;
   }
 }
 
